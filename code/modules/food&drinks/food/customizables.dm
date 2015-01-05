@@ -77,7 +77,7 @@
 	return
 
 /obj/item/weapon/reagent_containers/food/snacks/customizable/attackby(obj/item/I,mob/user)
-	if((src.contents.len >= src.ingMax) || (src.contents.len >= ingredientLimit))
+	if((src.contents.len >= src.ingMax) || (src.contents.len >= 30))
 		user << "<span class='warning'>How about no.</span>"
 	else if(istype(I,/obj/item/weapon/reagent_containers/food/snacks))
 		var/obj/item/weapon/reagent_containers/food/snacks/S = I
@@ -199,62 +199,6 @@
 	desc = "Made with love."
 	icon_state = "wafflecustom"
 
-/obj/item/weapon/reagent_containers/food/snacks/customizable/candy/cookie
-	name = "cookie"
-	icon_state = "cookiecustom"
-
-/obj/item/weapon/reagent_containers/food/snacks/customizable/candy/cotton
-	name = "flavored cotton candy"
-	icon_state = "cottoncandycustom"
-
-/obj/item/weapon/reagent_containers/food/snacks/customizable/candy/gummybear
-	name = "flavored giant gummy bear"
-	icon_state = "gummybearcustom"
-
-/obj/item/weapon/reagent_containers/food/snacks/customizable/candy/gummyworm
-	name = "flavored giant gummy worm"
-	icon_state = "gummywormcustom"
-
-/obj/item/weapon/reagent_containers/food/snacks/customizable/candy/jellybean
-	name = "flavored giant jelly bean"
-	icon_state = "jellybeancustom"
-
-/obj/item/weapon/reagent_containers/food/snacks/customizable/candy/jawbreaker
-	name = "flavored jawbreaker"
-	icon_state = "jawbreakercustom"
-
-/obj/item/weapon/reagent_containers/food/snacks/customizable/candy/candycane
-	name = "flavored candy cane"
-	icon_state = "candycanecustom"
-
-/obj/item/weapon/reagent_containers/food/snacks/customizable/candy/gum
-	name = "flavored gum"
-	icon_state = "gumcustom"
-
-/obj/item/weapon/reagent_containers/food/snacks/customizable/candy/donut
-	name = "filled donut"
-	desc = "Donut eat this!" // kill me
-	icon_state = "donutcustom"
-
-/obj/item/weapon/reagent_containers/food/snacks/customizable/candy/bar
-	name = "flavored chocolate bar"
-	desc = "Made in a factory downtown."
-	icon_state = "barcustom"
-
-/obj/item/weapon/reagent_containers/food/snacks/customizable/candy/sucker
-	name = "flavored sucker"
-	desc = "Suck suck suck."
-	icon_state = "suckercustom"
-
-/obj/item/weapon/reagent_containers/food/snacks/customizable/candy/cash
-	name = "flavored chocolate cash"
-	desc = "I got piles!" //I bet you do
-	icon_state = "cashcustom"
-
-/obj/item/weapon/reagent_containers/food/snacks/customizable/candy/coin
-	name = "flavored chocolate coin"
-	icon_state = "coincustom"
-
 /obj/item/weapon/reagent_containers/food/snacks/customizable/fullycustom
 	name = "on a plate"
 	desc = "A unique dish."
@@ -272,145 +216,8 @@
 	icon_state = "burger"
 	stackIngredients = 1
 	addTop = 1
-// Customizable Drinks /////////////////////////////////////////
-
-/obj/item/weapon/reagent_containers/food/drinks/bottle/customizable
-	volume = 100
-	gulp_size = 2
-	var/list/ingredients = list()
-	var/initReagent
-	var/ingMax = 1
-
-/obj/item/weapon/reagent_containers/food/drinks/bottle/customizable/New()
-	. = ..()
-	src.reagents.add_reagent(src.initReagent,50)
-	return
-
-/obj/item/weapon/reagent_containers/food/drinks/bottle/customizable/attackby(obj/item/I,mob/user)
-	if(istype(I,/obj/item/weapon/pen))
-		src.name = copytext(sanitize(input(usr,"Name the bottle.",,src.name)),1,MAX_NAME_LEN)
-	else if(istype(I,/obj/item/weapon/reagent_containers/food/snacks))
-		if(src.ingredients.len < src.ingMax)
-			var/obj/item/weapon/reagent_containers/food/snacks/S = I
-			if(user)
-				user.drop_item()
-			S.loc = src
-			if(user)
-				user << "<span class='notice'>You add the [S.name] to the [src.name].</span>"
-			S.reagents.trans_to(src,S.reagents.total_volume)
-			src.ingredients += S
-			src.update()
-		else user << "<span class='warning'>That won't fit.</span>"
-	else . = ..()
-	return
-
-/obj/item/weapon/reagent_containers/food/drinks/bottle/customizable/proc/update()
-	var/obj/item/weapon/reagent_containers/food/snacks/S = src.ingredients[1]
-	src.name = S.name + src.name
-	return
-
-/obj/item/weapon/reagent_containers/food/drinks/bottle/customizable/Destroy()
-	for(. in src.ingredients) qdel(.)
-	return ..()
-
-// Drink Subtypes //////////////////////////////////////////////
-
-/obj/item/weapon/reagent_containers/food/drinks/bottle/customizable/wine
-	name = "wine"
-	desc = "Classy."
-	icon_state = "winecustom"
-	initReagent = "wine"
-
-/obj/item/weapon/reagent_containers/food/drinks/bottle/customizable/whiskey
-	name = "whiskey"
-	desc = "A bottle of quite-a-bit-proof whiskey."
-	icon_state = "whiskeycustom"
-	initReagent = "whiskey"
-
-/obj/item/weapon/reagent_containers/food/drinks/bottle/customizable/vermouth
-	name = "vermouth"
-	desc = "Shaken, not stirred."
-	icon_state = "vermouthcustom"
-	initReagent = "vermouth"
-
-/obj/item/weapon/reagent_containers/food/drinks/bottle/customizable/vodka
-	name = "vodka"
-	desc = "Get drunk, comrade."
-	icon_state = "vodkacustom"
-	initReagent = "vodka"
-
-/obj/item/weapon/reagent_containers/food/drinks/bottle/customizable/ale
-	name = "ale"
-	desc = "Strike the asteroid!"
-	icon_state = "alecustom"
-	initReagent = "wine"
 
 
-
-// Cooking Machine Food Items  //////////////////////////////////////////////
-
-////////////////////////////////ICE CREAM///////////////////////////////////
-/obj/item/weapon/reagent_containers/food/snacks/icecream
-        name = "ice cream"
-        desc = "Delicious ice cream."
-        icon = 'icons/obj/kitchen.dmi'
-        icon_state = "icecream_cone"
-        New()
-                ..()
-                reagents.add_reagent("nutriment", 1)
-                reagents.add_reagent("sugar",1)
-                bitesize = 1
-                update_icon()
-
-        update_icon()
-                overlays.Cut()
-                var/image/filling = image('icons/obj/kitchen.dmi', src, "icecream_color")
-                filling.icon += mix_color_from_reagents(reagents.reagent_list)
-                overlays += filling
-
-/obj/item/weapon/reagent_containers/food/snacks/icecream/icecreamcone
-        name = "ice cream cone"
-        desc = "Delicious ice cream."
-        icon_state = "icecream_cone"
-        volume = 500
-        New()
-                ..()
-                reagents.add_reagent("nutriment", 2)
-                reagents.add_reagent("sugar",6)
-                reagents.add_reagent("ice",2)
-                bitesize = 3
-
-/obj/item/weapon/reagent_containers/food/snacks/icecream/icecreamcup
-        name = "chocolate ice cream cone"
-        desc = "Delicious ice cream."
-        icon_state = "icecream_cup"
-        volume = 500
-        New()
-                ..()
-                reagents.add_reagent("nutriment", 4)
-                reagents.add_reagent("sugar",8)
-                reagents.add_reagent("ice",2)
-                bitesize = 6
-
-/obj/item/weapon/reagent_containers/food/snacks/cereal
-	name = "box of cereal"
-	desc = "A box of cereal."
-	icon = 'icons/obj/food.dmi'
-	icon_state = "cereal_box"
-	bitesize = 2
-	New()
-		..()
-		reagents.add_reagent("nutriment", 3)
-
-/obj/item/weapon/reagent_containers/food/snacks/deepfryholder
-	name = "Deep Fried Foods Holder Obj"
-	icon = 'icons/obj/food.dmi'
-	icon_state = "deepfried_holder_icon"
-	bitesize = 2
-	deepfried = 1
-	New()
-		..()
-		reagents.add_reagent("nutriment",deepFriedNutriment)
 
 ///////////////////////////////////////////
 // new old food stuff from bs12
