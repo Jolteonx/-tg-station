@@ -203,9 +203,9 @@
 		return
 	start()
 
-	for (var/obj/item/weapon/reagent_containers/food/F in contents)
-		if (F.microwavable)
-			new F.cookedtype (src.loc)
+	for (var/obj/item/weapon/reagent_containers/food/snacks/F in contents)
+		if (F.cooked_type)
+			new F.cooked_type (src.loc)
 		else
 			if(dirty < 100)
 				dirty++

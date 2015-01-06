@@ -3,6 +3,9 @@
 	desc = "A slab of meat"
 	icon_state = "meat"
 	dried_type = /obj/item/weapon/reagent_containers/food/snacks/sosjerky
+	slice_path = /obj/item/weapon/reagent_containers/food/snacks/rawcutlet
+	slices_num = 3
+
 
 /obj/item/weapon/reagent_containers/food/snacks/meat/New()
 	..()
@@ -76,3 +79,5 @@
 /obj/item/weapon/reagent_containers/food/snacks/meat/pug
 	name = "Pug meat"
 	desc = "Tastes like... well you know..."
+
+

@@ -194,11 +194,6 @@
 	desc = "Very tasty."
 	icon_state = "saladcustom"
 
-/obj/item/weapon/reagent_containers/food/snacks/customizable/cook/waffles
-	name = "waffles"
-	desc = "Made with love."
-	icon_state = "wafflecustom"
-
 /obj/item/weapon/reagent_containers/food/snacks/customizable/fullycustom
 	name = "on a plate"
 	desc = "A unique dish."
@@ -208,6 +203,7 @@
 	name = "soup"
 	desc = "A bowl with liquid and... stuff in it."
 	icon_state = "soup"
+	cooked_type = /obj/item/weapon/reagent_containers/food/snacks/wishsoup
 	trash = /obj/item/trash/bowl
 
 /obj/item/weapon/reagent_containers/food/snacks/customizable/burger
@@ -244,6 +240,7 @@
 	desc = "A piece of dough."
 	icon = 'icons/obj/food_ingredients.dmi'
 	icon_state = "dough"
+	cooked_type = /obj/item/weapon/reagent_containers/food/snacks/sliceable/store/bread
 	bitesize = 2
 	New()
 		..()
@@ -278,6 +275,7 @@
 	desc = "A building block of an impressive dish."
 	icon = 'icons/obj/food_ingredients.dmi'
 	icon_state = "doughslice"
+	cooked_type = /obj/item/weapon/reagent_containers/food/snacks/bun
 	bitesize = 2
 	New()
 		..()
@@ -286,6 +284,28 @@
 /obj/item/weapon/reagent_containers/food/snacks/bun
 	name = "bun"
 	desc = "A base for any self-respecting burger."
+	icon = 'icons/obj/food_ingredients.dmi'
+	icon_state = "bun"
+	bitesize = 2
+	New()
+		..()
+		reagents.add_reagent("nutriment", 4)
+
+/obj/item/weapon/reagent_containers/food/snacks/rawcutlet
+	name = "raw cutlet"
+	desc = "A raw meat cutlet."
+	icon = 'icons/obj/food_ingredients.dmi'
+	icon_state = "bun"
+	cooked_type = /obj/item/weapon/reagent_containers/food/snacks/cutlet
+	bitesize = 2
+	New()
+		..()
+		reagents.add_reagent("nutriment", 4)
+
+
+/obj/item/weapon/reagent_containers/food/snacks/cutlet
+	name = "cutlet"
+	desc = "A cooked meat cutlet."
 	icon = 'icons/obj/food_ingredients.dmi'
 	icon_state = "bun"
 	bitesize = 2

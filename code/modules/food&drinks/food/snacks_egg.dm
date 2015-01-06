@@ -17,6 +17,7 @@
 	name = "egg"
 	desc = "An egg!"
 	icon_state = "egg"
+	cooked_type = /obj/item/weapon/reagent_containers/food/snacks/boiledegg
 
 /obj/item/weapon/reagent_containers/food/snacks/egg/New()
 	..()

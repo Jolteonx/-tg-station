@@ -13,8 +13,9 @@
 	var/dried_type = null
 	var/potency = null
 	var/dry = 0
-	var/deepfried = 0
+	var/cooked_type = null
 	var/filling_color = "#FFFFFF"
+
 
 	//Placeholder for effect that trigger on eating that aren't tied to reagents.
 /obj/item/weapon/reagent_containers/food/snacks/proc/On_Consume()
@@ -135,22 +136,11 @@
 	if((slices_num <= 0 || !slices_num) || !slice_path)
 		return 0
 	var/inaccurate = 0
-	if( \
-			istype(W, /obj/item/weapon/kitchenknife) || \
-			istype(W, /obj/item/weapon/butch) || \
-			istype(W, /obj/item/weapon/scalpel) || \
-			istype(W, /obj/item/weapon/kitchen/utensil/knife) \
-		)
-	else if( \
-			istype(W, /obj/item/weapon/circular_saw) || \
-			istype(W, /obj/item/weapon/melee/energy/sword) && W:active || \
-			istype(W, /obj/item/weapon/melee/energy/blade) || \
-			istype(W, /obj/item/weapon/shovel) || \
-			istype(W, /obj/item/weapon/hatchet) \
-		)
-		inaccurate = 1
-	else
+	var/sharpness = is_sharp(W)
+	if(!sharpness)
 		return 0 // --- this is everything that is NOT a slicing implement, and which is not being slipped into food; allow afterattack ---
+	else if (sharpness == 1)
+		inaccurate = 1
 
 	if ( \
 			!isturf(src.loc) || \
