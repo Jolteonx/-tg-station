@@ -99,6 +99,7 @@
 	desc = "Needs some butter!"
 	icon_state = "corn"
 	cooked_type = /obj/item/weapon/reagent_containers/food/snacks/popcorn
+	filling_color = "#000000"
 	trash = /obj/item/weapon/grown/corncob
 
 /obj/item/weapon/reagent_containers/food/snacks/grown/corn/add_juice()
