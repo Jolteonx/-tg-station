@@ -3,10 +3,12 @@
 
 ////////////////////////////////////////////////PIES////////////////////////////////////////////////
 
-/datum/recipe/pie/plain
+/*
+/datum/recipe/craft/plainpie
 	reagents = list("flour" = 10)
 	items = list()
 	result = /obj/item/weapon/reagent_containers/food/snacks/pie/plain
+*/
 
 /datum/recipe/pie
 	reagents = list("flour" = 10)

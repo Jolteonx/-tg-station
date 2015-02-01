@@ -3,6 +3,7 @@
 
 ////////////////////////////////////////////////BURGERS////////////////////////////////////////////////
 
+/*
 /datum/recipe/burger/human
 	make_food(var/obj/container as obj)
 		var/human_name
@@ -27,6 +28,7 @@
 		/obj/item/weapon/reagent_containers/food/snacks/meat/human
 	)
 	result = /obj/item/weapon/reagent_containers/food/snacks/burger/human
+*/
 
 /datum/recipe/burger/plain
 	reagents = list("flour" = 5)

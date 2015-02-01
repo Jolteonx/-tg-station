@@ -25,7 +25,8 @@
 	)
 	result = /obj/item/weapon/reagent_containers/food/snacks/sliceable/store/cake/cheese
 
-/datum/recipe/cake/plain
+/*
+/datum/recipe/craft/plaincake
 	reagents = list("milk" = 5, "flour" = 15)
 	items = list(
 		/obj/item/weapon/reagent_containers/food/snacks/egg,
@@ -33,6 +34,7 @@
 		/obj/item/weapon/reagent_containers/food/snacks/egg,
 	)
 	result = /obj/item/weapon/reagent_containers/food/snacks/sliceable/store/cake/plain
+*/
 
 /datum/recipe/cake/birthday
 	reagents = list("milk" = 5, "flour" = 15)
