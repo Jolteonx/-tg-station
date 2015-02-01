@@ -1,122 +1,141 @@
 
 /obj/item/weapon/reagent_containers/food/snacks/pie
+	name = "pie"
+	desc = "A pie."
+	icon_state = "pie"
+	trash = /obj/item/trash/plate
+	bitesize = 3
+
+/obj/item/weapon/reagent_containers/food/snacks/pie/New()
+	..()
+	reagents.add_reagent("nutriment", 4)
+	reagents.add_reagent("vitamin", 2)
+
+
+/obj/item/weapon/reagent_containers/food/snacks/pie/plain
+	name = "plain pie"
+	desc = "A simple pie, still delicious."
+	custom_food_type = /obj/item/weapon/reagent_containers/food/snacks/customizable/pie
+
+
+/obj/item/weapon/reagent_containers/food/snacks/pie/cream
 	name = "banana cream pie"
 	desc = "Just like back home, on clown planet! HONK!"
 	icon_state = "pie"
 	trash = /obj/item/trash/plate
 
-/obj/item/weapon/reagent_containers/food/snacks/pie/New()
+/obj/item/weapon/reagent_containers/food/snacks/pie/cream/New()
 	..()
-	reagents.add_reagent("nutriment", 4)
 	reagents.add_reagent("banana",5)
 	reagents.add_reagent("vitamin", 2)
-	bitesize = 3
 
-/obj/item/weapon/reagent_containers/food/snacks/pie/throw_impact(atom/hit_atom)
+/obj/item/weapon/reagent_containers/food/snacks/pie/cream/throw_impact(atom/hit_atom)
 	..()
 	new/obj/effect/decal/cleanable/pie_smudge(src.loc)
 	reagents.reaction(hit_atom, TOUCH)
 	del(src) // Not qdel, because it'll hit other mobs then the floor for runtimes.
 
-/obj/item/weapon/reagent_containers/food/snacks/berryclafoutis
+
+/obj/item/weapon/reagent_containers/food/snacks/pie/berryclafoutis
 	name = "berry clafoutis"
 	desc = "No black birds, this is a good sign."
 	icon_state = "berryclafoutis"
-	trash = /obj/item/trash/plate
 
-/obj/item/weapon/reagent_containers/food/snacks/berryclafoutis/New()
+/obj/item/weapon/reagent_containers/food/snacks/pie/berryclafoutis/New()
 	..()
-	reagents.add_reagent("nutriment", 4)
 	reagents.add_reagent("berryjuice", 5)
 	reagents.add_reagent("vitamin", 2)
-	bitesize = 3
 
-/obj/item/weapon/reagent_containers/food/snacks/meatpie
+
+/obj/item/weapon/reagent_containers/food/snacks/pie/meatpie
 	name = "meat-pie"
 	icon_state = "meatpie"
 	desc = "An old barber recipe, very delicious!"
-	trash = /obj/item/trash/plate
 
-/obj/item/weapon/reagent_containers/food/snacks/meatpie/New()
+/obj/item/weapon/reagent_containers/food/snacks/pie/meatpie/New()
 	..()
-	reagents.add_reagent("nutriment", 10)
-	reagents.add_reagent("vitamin", 5)
+	reagents.add_reagent("nutriment", 6)
+	reagents.add_reagent("vitamin", 3)
 	bitesize = 2
 
-/obj/item/weapon/reagent_containers/food/snacks/tofupie
+
+/obj/item/weapon/reagent_containers/food/snacks/pie/tofupie
 	name = "tofu-pie"
 	icon_state = "meatpie"
 	desc = "A delicious tofu pie."
-	trash = /obj/item/trash/plate
 
-/obj/item/weapon/reagent_containers/food/snacks/tofupie/New()
+/obj/item/weapon/reagent_containers/food/snacks/pie/tofupie/New()
 	..()
-	reagents.add_reagent("nutriment", 10)
+	reagents.add_reagent("nutriment", 6)
 	reagents.add_reagent("vitamin", 2)
 	bitesize = 2
 
-/obj/item/weapon/reagent_containers/food/snacks/amanita_pie
+
+/obj/item/weapon/reagent_containers/food/snacks/pie/amanita_pie
 	name = "amanita pie"
 	desc = "Sweet and tasty poison pie."
 	icon_state = "amanita_pie"
 
-/obj/item/weapon/reagent_containers/food/snacks/amanita_pie/New()
+/obj/item/weapon/reagent_containers/food/snacks/pie/amanita_pie/New()
 	..()
-	reagents.add_reagent("nutriment", 5)
+	reagents.add_reagent("nutriment", 2)
 	reagents.add_reagent("amatoxin", 3)
 	reagents.add_reagent("mushroomhallucinogen", 1)
-	reagents.add_reagent("vitamin", 4)
+	reagents.add_reagent("vitamin", 3)
 	bitesize = 4
 
-/obj/item/weapon/reagent_containers/food/snacks/plump_pie
+
+/obj/item/weapon/reagent_containers/food/snacks/pie/plump_pie
 	name = "plump pie"
 	desc = "I bet you love stuff made out of plump helmets!"
 	icon_state = "plump_pie"
 
-/obj/item/weapon/reagent_containers/food/snacks/plump_pie/New()
+/obj/item/weapon/reagent_containers/food/snacks/pie/plump_pie/New()
 	..()
 	if(prob(10))
 		name = "exceptional plump pie"
 		desc = "Microwave is taken by a fey mood! It has cooked an exceptional plump pie!"
 		reagents.add_reagent("tricordrazine", 5)
 
-	reagents.add_reagent("nutriment", 8)
-	reagents.add_reagent("vitamin", 4)
+	reagents.add_reagent("nutriment", 4)
+	reagents.add_reagent("vitamin", 3)
 	bitesize = 2
 
-/obj/item/weapon/reagent_containers/food/snacks/xemeatpie
+
+/obj/item/weapon/reagent_containers/food/snacks/pie/xemeatpie
 	name = "xeno-pie"
 	icon_state = "xenomeatpie"
 	desc = "A delicious meatpie. Probably heretical."
 	trash = /obj/item/trash/plate
 
-/obj/item/weapon/reagent_containers/food/snacks/xemeatpie/New()
+/obj/item/weapon/reagent_containers/food/snacks/pie/xemeatpie/New()
 	..()
-	reagents.add_reagent("nutriment", 10)
-	reagents.add_reagent("vitamin", 5)
+	reagents.add_reagent("nutriment", 5)
+	reagents.add_reagent("vitamin", 4)
 	bitesize = 2
 
-/obj/item/weapon/reagent_containers/food/snacks/applepie
+
+/obj/item/weapon/reagent_containers/food/snacks/pie/applepie
 	name = "apple pie"
 	desc = "A pie containing sweet sweet love...or apple."
 	icon_state = "applepie"
 
-/obj/item/weapon/reagent_containers/food/snacks/applepie/New()
+/obj/item/weapon/reagent_containers/food/snacks/pie/applepie/New()
 	..()
 	reagents.add_reagent("nutriment", 4)
 	reagents.add_reagent("vitamin", 2)
-	bitesize = 3
 
-/obj/item/weapon/reagent_containers/food/snacks/cherrypie
+
+/obj/item/weapon/reagent_containers/food/snacks/pie/cherrypie
 	name = "cherry pie"
 	desc = "Taste so good, make a grown man cry."
 	icon_state = "cherrypie"
 
-/obj/item/weapon/reagent_containers/food/snacks/cherrypie/New()
+/obj/item/weapon/reagent_containers/food/snacks/pie/cherrypie/New()
 	..()
 	reagents.add_reagent("nutriment", 4)
 	reagents.add_reagent("vitamin", 2)
-	bitesize = 3
+
 
 /obj/item/weapon/reagent_containers/food/snacks/sliceable/pumpkinpie
 	name = "pumpkin pie"

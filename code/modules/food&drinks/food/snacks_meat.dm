@@ -160,7 +160,7 @@
 	name = "wing fang chu"
 	desc = "A savory dish of alien wing wang in soy."
 	icon_state = "wingfangchu"
-	trash = /obj/item/trash/snack_bowl
+	trash = /obj/item/weapon/reagent_containers/bowl
 
 /obj/item/weapon/reagent_containers/food/snacks/wingfangchu/New()
 	..()
@@ -271,7 +271,7 @@
 	name = "stew"
 	desc = "A nice and warm stew. Healthy and strong."
 	icon_state = "stew"
-	trash = /obj/item/trash/snack_bowl
+	trash = /obj/item/weapon/reagent_containers/bowl
 
 /obj/item/weapon/reagent_containers/food/snacks/stew/New()
 	..()

@@ -136,7 +136,7 @@
 	name = "spacy liberty duff"
 	desc = "Jello gelatin, from Alfred Hubbard's cookbook."
 	icon_state = "spacylibertyduff"
-	trash = /obj/item/trash/snack_bowl
+	trash = /obj/item/weapon/reagent_containers/bowl
 
 /obj/item/weapon/reagent_containers/food/snacks/spacylibertyduff/New()
 	..()
@@ -148,7 +148,7 @@
 	name = "amanita jelly"
 	desc = "Looks curiously toxic."
 	icon_state = "amanitajelly"
-	trash = /obj/item/trash/snack_bowl
+	trash = /obj/item/weapon/reagent_containers/bowl
 
 /obj/item/weapon/reagent_containers/food/snacks/amanitajelly/New()
 	..()

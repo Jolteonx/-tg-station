@@ -15,6 +15,7 @@
 	desc = "A plain dish of noodles, this sucks."
 	icon_state = "spaghettiboiled"
 	trash = /obj/item/trash/plate
+	custom_food_type = /obj/item/weapon/reagent_containers/food/snacks/customizable/pasta
 
 /obj/item/weapon/reagent_containers/food/snacks/boiledspaghetti/New()
 	..()

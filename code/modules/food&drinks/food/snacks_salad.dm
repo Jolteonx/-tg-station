@@ -5,7 +5,7 @@
 	name = "\improper Aesir salad"
 	desc = "Probably too incredible for mortal men to fully enjoy."
 	icon_state = "aesirsalad"
-	trash = /obj/item/trash/snack_bowl
+	trash = /obj/item/weapon/reagent_containers/bowl
 
 /obj/item/weapon/reagent_containers/food/snacks/aesirsalad/New()
 	..()
@@ -19,7 +19,7 @@
 	name = "herb salad"
 	desc = "A tasty salad with apples on top."
 	icon_state = "herbsalad"
-	trash = /obj/item/trash/snack_bowl
+	trash = /obj/item/weapon/reagent_containers/bowl
 
 /obj/item/weapon/reagent_containers/food/snacks/herbsalad/New()
 	..()
@@ -31,7 +31,7 @@
 	name = "valid salad"
 	desc = "It's just an herb salad with meatballs and fried potato slices. Nothing suspicious about it."
 	icon_state = "validsalad"
-	trash = /obj/item/trash/snack_bowl
+	trash = /obj/item/weapon/reagent_containers/bowl
 
 /obj/item/weapon/reagent_containers/food/snacks/validsalad/New()
 	..()

@@ -17,7 +17,7 @@
 		/obj/item/weapon/reagent_containers/food/snacks/cheesewedge,
 		/obj/item/weapon/reagent_containers/food/snacks/cheesewedge,
 	)
-	result = /obj/item/weapon/reagent_containers/food/snacks/sliceable/store/meatbread
+	result = /obj/item/weapon/reagent_containers/food/snacks/sliceable/store/bread/meat
 
 /datum/recipe/bread/xenomeat
 	reagents = list("flour" = 15)
@@ -29,7 +29,7 @@
 		/obj/item/weapon/reagent_containers/food/snacks/cheesewedge,
 		/obj/item/weapon/reagent_containers/food/snacks/cheesewedge,
 	)
-	result = /obj/item/weapon/reagent_containers/food/snacks/sliceable/store/xenomeatbread
+	result = /obj/item/weapon/reagent_containers/food/snacks/sliceable/store/bread/xenomeat
 
 /datum/recipe/bread/spidermeat
 	reagents = list("flour" = 15)
@@ -41,7 +41,7 @@
 		/obj/item/weapon/reagent_containers/food/snacks/cheesewedge,
 		/obj/item/weapon/reagent_containers/food/snacks/cheesewedge,
 	)
-	result = /obj/item/weapon/reagent_containers/food/snacks/sliceable/store/spidermeatbread
+	result = /obj/item/weapon/reagent_containers/food/snacks/sliceable/store/bread/spidermeat
 
 /datum/recipe/bread/banana
 	reagents = list("milk" = 5, "flour" = 15)
@@ -51,7 +51,7 @@
 		/obj/item/weapon/reagent_containers/food/snacks/egg,
 		/obj/item/weapon/reagent_containers/food/snacks/grown/banana,
 	)
-	result = /obj/item/weapon/reagent_containers/food/snacks/sliceable/store/bananabread
+	result = /obj/item/weapon/reagent_containers/food/snacks/sliceable/store/bread/banana
 
 /datum/recipe/bread/tofu
 	reagents = list("flour" = 15)
@@ -63,7 +63,7 @@
 		/obj/item/weapon/reagent_containers/food/snacks/cheesewedge,
 		/obj/item/weapon/reagent_containers/food/snacks/cheesewedge,
 	)
-	result = /obj/item/weapon/reagent_containers/food/snacks/sliceable/store/tofubread
+	result = /obj/item/weapon/reagent_containers/food/snacks/sliceable/store/bread/tofu
 
 /datum/recipe/bread/creamcheese
 	reagents = list("flour" = 15)
@@ -71,7 +71,7 @@
 		/obj/item/weapon/reagent_containers/food/snacks/cheesewedge,
 		/obj/item/weapon/reagent_containers/food/snacks/cheesewedge,
 	)
-	result = /obj/item/weapon/reagent_containers/food/snacks/sliceable/store/creamcheesebread
+	result = /obj/item/weapon/reagent_containers/food/snacks/sliceable/store/bread/creamcheese
 
 /datum/recipe/bread/baguette
 	reagents = list("sodiumchloride" = 1, "blackpepper" = 1, "flour" = 10)

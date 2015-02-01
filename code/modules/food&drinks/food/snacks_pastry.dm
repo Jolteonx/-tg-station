@@ -138,7 +138,7 @@
 	name = "chawanmushi"
 	desc = "A legendary egg custard that makes friends out of enemies. Probably too hot for a cat to eat."
 	icon_state = "chawanmushi"
-	trash = /obj/item/trash/snack_bowl
+	trash = /obj/item/weapon/reagent_containers/bowl
 
 /obj/item/weapon/reagent_containers/food/snacks/chawanmushi/New()
 	..()

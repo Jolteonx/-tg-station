@@ -3,7 +3,7 @@
 	name = "meatball soup"
 	desc = "You've got balls kid, BALLS!"
 	icon_state = "meatballsoup"
-	trash = /obj/item/trash/snack_bowl
+	trash = /obj/item/weapon/reagent_containers/bowl
 
 /obj/item/weapon/reagent_containers/food/snacks/meatballsoup/New()
 	..()
@@ -58,7 +58,7 @@
 	name = "vegetable soup"
 	desc = "A true vegan meal."
 	icon_state = "vegetablesoup"
-	trash = /obj/item/trash/snack_bowl
+	trash = /obj/item/weapon/reagent_containers/bowl
 
 /obj/item/weapon/reagent_containers/food/snacks/vegetablesoup/New()
 	..()
@@ -72,7 +72,7 @@
 	name = "nettle soup"
 	desc = "To think, the botanist would've beat you to death with one of these."
 	icon_state = "nettlesoup"
-	trash = /obj/item/trash/snack_bowl
+	trash = /obj/item/weapon/reagent_containers/bowl
 
 /obj/item/weapon/reagent_containers/food/snacks/nettlesoup/New()
 	..()
@@ -87,7 +87,7 @@
 	name = "mystery soup"
 	desc = "The mystery is, why aren't you eating it?"
 	icon_state = "mysterysoup"
-	trash = /obj/item/trash/snack_bowl
+	trash = /obj/item/weapon/reagent_containers/bowl
 
 /obj/item/weapon/reagent_containers/food/snacks/mysterysoup/New()
 	..()
@@ -133,7 +133,9 @@
 	name = "wish soup"
 	desc = "I wish this was soup."
 	icon_state = "wishsoup"
-	trash = /obj/item/trash/snack_bowl
+	trash = /obj/item/weapon/reagent_containers/bowl
+	custom_food_type = /obj/item/weapon/reagent_containers/food/snacks/customizable/soup
+
 
 /obj/item/weapon/reagent_containers/food/snacks/wishsoup/New()
 	..()
@@ -149,7 +151,7 @@
 	name = "hot chili"
 	desc = "A five alarm Texan Chili!"
 	icon_state = "hotchili"
-	trash = /obj/item/trash/snack_bowl
+	trash = /obj/item/weapon/reagent_containers/bowl
 
 /obj/item/weapon/reagent_containers/food/snacks/hotchili/New()
 	..()
@@ -165,7 +167,7 @@
 	name = "cold chili"
 	desc = "This slush is barely a liquid!"
 	icon_state = "coldchili"
-	trash = /obj/item/trash/snack_bowl
+	trash = /obj/item/weapon/reagent_containers/bowl
 
 /obj/item/weapon/reagent_containers/food/snacks/coldchili/New()
 	..()
@@ -180,7 +182,7 @@
 	name = "monkey's delight"
 	desc = "A delicious soup with dumplings and hunks of monkey meat simmered to perfection, in a broth that tastes faintly of bananas."
 	icon_state = "monkeysdelight"
-	trash = /obj/item/trash/snack_bowl
+	trash = /obj/item/weapon/reagent_containers/bowl
 
 /obj/item/weapon/reagent_containers/food/snacks/monkeysdelight/New()
 	..()
@@ -195,7 +197,7 @@
 	name = "tomato soup"
 	desc = "Drinking this feels like being a vampire! A tomato vampire..."
 	icon_state = "tomatosoup"
-	trash = /obj/item/trash/snack_bowl
+	trash = /obj/item/weapon/reagent_containers/bowl
 
 /obj/item/weapon/reagent_containers/food/snacks/tomatosoup/New()
 	..()
@@ -209,7 +211,7 @@
 	name = "milosoup"
 	desc = "The universes best soup! Yum!!!"
 	icon_state = "milosoup"
-	trash = /obj/item/trash/snack_bowl
+	trash = /obj/item/weapon/reagent_containers/bowl
 
 /obj/item/weapon/reagent_containers/food/snacks/milosoup/New()
 	..()
@@ -223,7 +225,7 @@
 	name = "chantrelle soup"
 	desc = "A delicious and hearty mushroom soup."
 	icon_state = "mushroomsoup"
-	trash = /obj/item/trash/snack_bowl
+	trash = /obj/item/weapon/reagent_containers/bowl
 
 /obj/item/weapon/reagent_containers/food/snacks/mushroomsoup/New()
 	..()
@@ -236,7 +238,7 @@
 	name = "beet soup"
 	desc = "Wait, how do you spell it again..?"
 	icon_state = "beetsoup"
-	trash = /obj/item/trash/snack_bowl
+	trash = /obj/item/weapon/reagent_containers/bowl
 
 /obj/item/weapon/reagent_containers/food/snacks/beetsoup/New()
 	..()
