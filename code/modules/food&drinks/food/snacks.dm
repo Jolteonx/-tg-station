@@ -138,7 +138,7 @@
 		var/obj/item/weapon/reagent_containers/food/snacks/S = W
 		if(custom_food_type && ispath(custom_food_type))
 			var/obj/item/weapon/reagent_containers/food/snacks/customizable/C = new custom_food_type(get_turf(src))
-			C.create_custom_food(src, S, user)
+			C.initialize_custom_food(src, S, user)
 			return 0
 	if((slices_num <= 0 || !slices_num) || !slice_path)
 		return 0

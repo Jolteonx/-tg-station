@@ -31,9 +31,11 @@
 	)
 	result = /obj/item/weapon/reagent_containers/food/snacks/soup/nettle
 
+/*
 /datum/recipe/soup/wish
 	reagents = list("water" = 20)
 	result= /obj/item/weapon/reagent_containers/food/snacks/soup/wish
+*/
 
 /datum/recipe/soup/hotchili
 	items = list(

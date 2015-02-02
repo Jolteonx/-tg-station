@@ -18,7 +18,7 @@
  *    transfers reagents from prerequisite objects,
  *    deletes all prerequisite objects (even not needed for recipe at the moment).
  *
- *  /proc/select_recipe(list/datum/recipe/avaiable_recipes, obj/obj as obj, exact = 1)
+ *  /proc/select_recipe(list/datum/recipe/available_recipes, obj/obj as obj, exact = 1)
  *    Wonderful function that select suitable recipe for you.
  *    obj is a machine (or magik hat) with prerequisites,
  *    exact = 0 forces algorithm to ignore superfluous stuff.
@@ -48,6 +48,7 @@
 			if (aval_r_amnt>reagents[r_r])
 				. = -1
 			else
+				world << "[src] failed reagent [r_r]"
 				return 0
 	if ((reagents?(reagents.len):(0)) < avail_reagents.reagent_list.len)
 		return -1
@@ -71,6 +72,7 @@
 		if (!found)
 			. = -1
 	if (checklist.len)
+		world << "[src] failed item [checklist[1]]"
 		return 0
 	return .
 
@@ -95,11 +97,13 @@
 	container.reagents.clear_reagents()
 	return result_obj
 
-/proc/select_recipe(var/list/datum/recipe/avaiable_recipes, var/obj/obj as obj, var/exact = 1 as num)
+/proc/select_recipe(var/list/datum/recipe/available_recipes, var/obj/obj as obj, var/exact = 1 as num)
+	world << "calling select_recipe"
 	if (!exact)
 		exact = -1
 	var/list/datum/recipe/possible_recipes = new
-	for (var/datum/recipe/recipe in avaiable_recipes)
+	for (var/datum/recipe/recipe in available_recipes)
+		world << "[recipe],[recipe.result] ."
 		if (recipe.check_reagents(obj.reagents)==exact && recipe.check_items(obj)==exact)
 			possible_recipes+=recipe
 	if (possible_recipes.len==0)

@@ -16,12 +16,12 @@
 // Various Snacks //////////////////////////////////////////////
 
 
-/obj/item/weapon/reagent_containers/food/snacks/customizable/proc/create_custom_food(obj/item/weapon/reagent_containers/BASE, obj/item/I, mob/user)
+/obj/item/weapon/reagent_containers/food/snacks/customizable/proc/initialize_custom_food(obj/item/weapon/reagent_containers/BASE, obj/item/I, mob/user)
 	BASE.reagents.trans_to(src,reagents.total_volume)
 	src.attackby(I, user)
 	qdel(BASE)
 
-/obj/item/weapon/reagent_containers/food/snacks/customizable/sandwich/create_custom_food(obj/item/weapon/reagent_containers/BASE, obj/item/I, mob/user)
+/obj/item/weapon/reagent_containers/food/snacks/customizable/sandwich/initialize_custom_food(obj/item/weapon/reagent_containers/BASE, obj/item/I, mob/user)
 	icon_state = BASE.icon_state
 	..()
 
@@ -33,7 +33,7 @@
 	name = "bowl"
 	desc = "An empty bowl. Put some food in it to start making a soup."
 	icon = 'icons/obj/food.dmi'
-	icon_state = "soup"
+	icon_state = "bowl"
 
 /obj/item/weapon/reagent_containers/bowl/attackby(obj/item/I,mob/user)
 	if(istype(I,/obj/item/weapon/reagent_containers/food/snacks/grown))
@@ -42,7 +42,7 @@
 		else
 			var/obj/item/weapon/reagent_containers/food/snacks/grown/G = I
 			var/obj/item/weapon/reagent_containers/food/snacks/customizable/A = new/obj/item/weapon/reagent_containers/food/snacks/customizable/salad(get_turf(src))
-			A.create_custom_food(src, G, user)
+			A.initialize_custom_food(src, G, user)
 	else . = ..()
 	return
 
@@ -57,12 +57,12 @@
 	var/special_top = ""
 	var/recipe_type = null
 
-	var/list/datum/recipe/available_recipes
+	var/global/list/datum/recipe/available_recipes
 
 /obj/item/weapon/reagent_containers/food/snacks/customizable/New()
+	..()
 	if(recipe_type)
-		for(var/type in (typesof(recipe_type - recipe_type)))
-			available_recipes += new type
+		available_recipes = typesof(recipe_type) - recipe_type
 
 /obj/item/weapon/reagent_containers/food/snacks/customizable/examine(mob/user)
 	..()
@@ -109,7 +109,7 @@
 			I.pixel_x = pick(list(-1,0,1))
 			I.pixel_y = ingredients.len
 			overlays.Cut(ingredients.len)
-			var/top_icon = "[icon_state]"
+			var/top_icon = "[initial(icon_state)]"
 			if(special_top)
 				top_icon = special_top
 			var/image/TOP = new(icon, "[top_icon]")
@@ -123,7 +123,9 @@
 
 
 /obj/item/weapon/reagent_containers/food/snacks/customizable/proc/check_matched_recipe()
-	var/datum/recipe/R = select_recipe(available_recipes, src)
+	world << "[available_recipes]N1[available_recipes[1]]"
+	var/datum/recipe/R = select_recipe(available_recipes, src, 0)
+	world << "[R]"
 	if(R)
 		var/obj/result_obj = new R.result(get_turf(src))
 		reagents.trans_to(result_obj, reagents.total_volume)
@@ -254,18 +256,18 @@
 	icon_state = "flat dough"
 	slice_path = /obj/item/weapon/reagent_containers/food/snacks/doughslice
 	slices_num = 3
-	cooked_type = /obj/item/weapon/reagent_containers/food/snacks/flatbread
+	cooked_type = /obj/item/weapon/reagent_containers/food/snacks/pizzabread
 
 /obj/item/weapon/reagent_containers/food/snacks/sliceable/flatdough/New()
 	..()
 	reagents.add_reagent("nutriment", 3)
 
 
-/obj/item/weapon/reagent_containers/food/snacks/flatbread
-	name = "cake batter"
-	desc = "Cook it to get a pi."
+/obj/item/weapon/reagent_containers/food/snacks/pizzabread
+	name = "pizza bread"
+	desc = "Add ingredients to make a pizza"
 	icon = 'icons/obj/food_ingredients.dmi'
-	icon_state = "cakebatter"
+	icon_state = "pizzabread"
 	bitesize = 2
 	custom_food_type = /obj/item/weapon/reagent_containers/food/snacks/customizable/pizza
 
@@ -286,7 +288,7 @@
 /obj/item/weapon/reagent_containers/food/snacks/bun
 	name = "bun"
 	desc = "A base for any self-respecting burger."
-	icon = 'icons/obj/food_ingredients.dmi'
+	icon = 'icons/obj/food.dmi'
 	icon_state = "bun"
 	bitesize = 2
 	custom_food_type = /obj/item/weapon/reagent_containers/food/snacks/customizable/burger
@@ -294,14 +296,13 @@
 /obj/item/weapon/reagent_containers/food/snacks/bun/New()
 	..()
 	reagents.add_reagent("nutriment", 4)
-	custom_food_type = /obj/item/weapon/reagent_containers/food/snacks/customizable/burger
 
 
 /obj/item/weapon/reagent_containers/food/snacks/rawcutlet
 	name = "raw cutlet"
 	desc = "A raw meat cutlet."
 	icon = 'icons/obj/food_ingredients.dmi'
-	icon_state = "bun"
+	icon_state = "rawcutlet"
 	cooked_type = /obj/item/weapon/reagent_containers/food/snacks/cutlet
 	bitesize = 2
 
@@ -314,7 +315,7 @@
 	name = "cutlet"
 	desc = "A cooked meat cutlet."
 	icon = 'icons/obj/food_ingredients.dmi'
-	icon_state = "bun"
+	icon_state = "cutlet"
 	bitesize = 2
 
 /obj/item/weapon/reagent_containers/food/snacks/cutlet/New()
