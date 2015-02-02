@@ -123,7 +123,9 @@
 
 
 /obj/item/weapon/reagent_containers/food/snacks/customizable/proc/check_matched_recipe()
-	world << "[available_recipes]N1[available_recipes[1]]"
+	world << "[available_recipes]"
+	for(var/datum/recipe/D in available_recipes)
+		world << "[D],[D.items[1]],[D.reagents[1]] .. "
 	var/datum/recipe/R = select_recipe(available_recipes, src, 0)
 	world << "[R]"
 	if(R)
