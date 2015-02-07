@@ -1,4 +1,8 @@
+
 /obj/item/weapon/reagent_containers/food/snacks/burger
+	filling_color = "#CD853F"
+
+/obj/item/weapon/reagent_containers/food/snacks/burger/plain
 	name = "burger"
 	desc = "The cornerstone of every nutritious breakfast."
 	icon_state = "hburger"
@@ -118,6 +122,7 @@
 	desc = "Forget the Big Mac. THIS is the future!"
 	icon_state = "bigbiteburger"
 	list_reagents = list("nutriment" = 14, "vitamin" = 5)
+	w_class = 3
 
 /obj/item/weapon/reagent_containers/food/snacks/burger/jelly
 	name = "jelly burger"
@@ -135,3 +140,4 @@
 	desc = "This is a mountain of a burger. FOOD!"
 	icon_state = "superbiteburger"
 	list_reagents = list("nutriment" = 46, "vitamin" = 5)
+	w_class = 3
