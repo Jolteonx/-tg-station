@@ -67,3 +67,5 @@ var/list/del_counter = list()
 */
 
 #define USE_BYGEX
+
+//Test B commit2
