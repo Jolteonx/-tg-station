@@ -278,4 +278,6 @@ proc/establish_db_connection()
 	else
 		return 1
 
+// Test A commit1
+
 #undef FAILED_DB_CONNECTION_CUTOFF
