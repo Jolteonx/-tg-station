@@ -1,12 +1,6 @@
 //This file was auto-corrected by findeclaration.exe on 25.5.2012 20:42:32
 
 /mob/living/carbon/monkey
-	var/oxygen_alert = 0
-	var/toxins_alert = 0
-	var/fire_alert = 0
-	var/pressure_alert = 0
-
-	var/temperature_alert = 0
 
 
 /mob/living/carbon/monkey/Life()
@@ -61,161 +55,6 @@
 		..()
 
 
-/mob/living/carbon/monkey/proc/breathe()
-	if(reagents)
-
-		if(reagents.has_reagent("lexorin")) return
-
-	if(!loc) return //probably ought to make a proper fix for this, but :effort: --NeoFite
-
-	var/datum/gas_mixture/environment = loc.return_air()
-	var/datum/gas_mixture/breath
-	if(health <= config.health_threshold_crit)
-		losebreath++
-	if(losebreath>0) //Suffocating so do not take a breath
-		losebreath--
-		if (prob(75)) //High chance of gasping for air
-			spawn emote("gasp")
-		if(istype(loc, /obj/))
-			var/obj/location_as_object = loc
-			location_as_object.handle_internal_lifeform(src, 0)
-	else
-		//First, check for air from internal atmosphere (using an air tank and mask generally)
-		breath = get_breath_from_internal(BREATH_VOLUME)
-
-		//No breath from internal atmosphere so get breath from location
-		if(!breath)
-			if(istype(loc, /obj/))
-				var/obj/location_as_object = loc
-				breath = location_as_object.handle_internal_lifeform(src, BREATH_VOLUME)
-			else if(istype(loc, /turf/))
-				var/breath_moles = environment.total_moles()*BREATH_PERCENTAGE
-				breath = loc.remove_air(breath_moles)
-
-				// Handle chem smoke effect  -- Doohl
-				var/block = 0
-				if(wear_mask)
-					if(istype(wear_mask, /obj/item/clothing/mask/gas))
-						block = 1
-
-				if(!block)
-
-					for(var/obj/effect/effect/chem_smoke/smoke in view(1, src))
-						if(smoke.reagents.total_volume)
-							smoke.reagents.reaction(src, INGEST)
-							spawn(5)
-								if(smoke)
-									smoke.reagents.copy_to(src, 10) // I dunno, maybe the reagents enter the blood stream through the lungs?
-							break // If they breathe in the nasty stuff once, no need to continue checking
-
-
-		else //Still give containing object the chance to interact
-			if(istype(loc, /obj/))
-				var/obj/location_as_object = loc
-				location_as_object.handle_internal_lifeform(src, 0)
-
-	handle_breath(breath)
-
-	if(breath)
-		loc.assume_air(breath)
-
-/mob/living/carbon/monkey/proc/handle_breath(datum/gas_mixture/breath)
-	if(status_flags & GODMODE)
-		return
-
-	if(!breath || (breath.total_moles() == 0))
-		adjustOxyLoss(7)
-
-		oxygen_alert = max(oxygen_alert, 1)
-
-		return 0
-
-	var/safe_oxygen_min = 16 // Minimum safe partial pressure of O2, in kPa
-	//var/safe_oxygen_max = 140 // Maximum safe partial pressure of O2, in kPa (Not used for now)
-	var/safe_co2_max = 10 // Yes it's an arbitrary value who cares?
-	var/safe_toxins_max = 0.5
-	var/SA_para_min = 0.5
-	var/SA_sleep_min = 5
-	var/oxygen_used = 0
-	var/breath_pressure = (breath.total_moles()*R_IDEAL_GAS_EQUATION*breath.temperature)/BREATH_VOLUME
-
-	//Partial pressure of the O2 in our breath
-	var/O2_pp = (breath.oxygen/breath.total_moles())*breath_pressure
-	// Same, but for the toxins
-	var/Toxins_pp = (breath.toxins/breath.total_moles())*breath_pressure
-	// And CO2, lets say a PP of more than 10 will be bad (It's a little less really, but eh, being passed out all round aint no fun)
-	var/CO2_pp = (breath.carbon_dioxide/breath.total_moles())*breath_pressure
-
-	if(O2_pp < safe_oxygen_min) 			// Too little oxygen
-		if(prob(20))
-			spawn(0) emote("gasp")
-		if (O2_pp == 0)
-			O2_pp = 0.01
-		var/ratio = safe_oxygen_min/O2_pp
-		adjustOxyLoss(min(5*ratio, 7)) // Don't fuck them up too fast (space only does 7 after all!)
-		oxygen_used = breath.oxygen*ratio/6
-		oxygen_alert = max(oxygen_alert, 1)
-	/*else if (O2_pp > safe_oxygen_max) 		// Too much oxygen (commented this out for now, I'll deal with pressure damage elsewhere I suppose)
-		spawn(0) emote("cough")
-		var/ratio = O2_pp/safe_oxygen_max
-		oxyloss += 5*ratio
-		oxygen_used = breath.oxygen*ratio/6
-		oxygen_alert = max(oxygen_alert, 1)*/
-	else 									// We're in safe limits
-		adjustOxyLoss(-5)
-		oxygen_used = breath.oxygen/6
-		oxygen_alert = 0
-
-	breath.oxygen -= oxygen_used
-	breath.carbon_dioxide += oxygen_used
-
-	if(CO2_pp > safe_co2_max)
-		if(!co2overloadtime) // If it's the first breath with too much CO2 in it, lets start a counter, then have them pass out after 12s or so.
-			co2overloadtime = world.time
-		else if(world.time - co2overloadtime > 120)
-			Paralyse(3)
-			adjustOxyLoss(3) // Lets hurt em a little, let them know we mean business
-			if(world.time - co2overloadtime > 300) // They've been in here 30s now, lets start to kill them for their own good!
-				adjustOxyLoss(8)
-		if(prob(20)) // Lets give them some chance to know somethings not right though I guess.
-			spawn(0) emote("cough")
-
-	else
-		co2overloadtime = 0
-
-	if(Toxins_pp > safe_toxins_max) // Too much toxins
-		var/ratio = (breath.toxins/safe_toxins_max) * 10
-		//adjustToxLoss(Clamp(ratio, MIN_PLASMA_DAMAGE, MAX_PLASMA_DAMAGE))	//Limit amount of damage toxin exposure can do per second
-		if(reagents)
-			reagents.add_reagent("plasma", Clamp(ratio, MIN_PLASMA_DAMAGE, MAX_PLASMA_DAMAGE))
-		toxins_alert = max(toxins_alert, 1)
-	else
-		toxins_alert = 0
-
-	if(breath.trace_gases.len)	// If there's some other shit in the air lets deal with it here.
-		for(var/datum/gas/sleeping_agent/SA in breath.trace_gases)
-			var/SA_pp = (SA.moles/breath.total_moles())*breath_pressure
-			if(SA_pp > SA_para_min) // Enough to make us paralysed for a bit
-				Paralyse(3) // 3 gives them one second to wake up and run away a bit!
-				if(SA_pp > SA_sleep_min) // Enough to make us sleep as well
-					sleeping = max(sleeping+2, 10)
-			else if(SA_pp > 0.01)	// There is sleeping gas in their lungs, but only a little, so give them a bit of a warning
-				if(prob(20))
-					spawn(0) emote(pick("giggle", "laugh"))
-
-
-	if(breath.temperature > (T0C+66)) // Hot air hurts :(
-		if(prob(20))
-			src << "<span class='danger'>You feel a searing heat in your lungs!</span>"
-		fire_alert = max(fire_alert, 2)
-	else
-		fire_alert = 0
-
-
-	//Temporary fixes to the alerts.
-
-	return 1
-
 /mob/living/carbon/monkey/handle_environment(datum/gas_mixture/environment)
 	if(!environment)
 		return
@@ -256,11 +95,9 @@
 /mob/living/carbon/monkey/proc/handle_temperature_damage(body_part, exposed_temperature, exposed_intensity)
 	if(status_flags & GODMODE) return
 	var/discomfort = min( abs(exposed_temperature - bodytemperature)*(exposed_intensity)/2000000, 1.0)
-	//adjustFireLoss(2.5*discomfort)
 
 	if(exposed_temperature > bodytemperature)
 		adjustFireLoss(20.0*discomfort)
-
 	else
 		adjustFireLoss(5.0*discomfort)
 
@@ -299,8 +136,6 @@
 	if (toxin)	toxin.icon_state = "tox[toxins_alert ? 1 : 0]"
 	if (oxygen) oxygen.icon_state = "oxy[oxygen_alert ? 1 : 0]"
 	if (fire) fire.icon_state = "fire[fire_alert ? 2 : 0]"
-	//NOTE: the alerts dont reset when youre out of danger. dont blame me,
-	//blame the person who coded them. Temporary fix added.
 
 	if(bodytemp)
 		switch(bodytemperature) //310.055 optimal body temp
@@ -340,6 +175,11 @@
 			hud_used.lingchemdisplay.maptext = "<div align='center' valign='middle' style='position:relative; top:0px; left:6px'> <font color='#dd66dd'>[mind.changeling.chem_charges]</font></div>"
 		else
 			hud_used.lingchemdisplay.invisibility = 101
+
+/mob/living/carbon/monkey/has_smoke_protection()
+	if(wear_mask)
+		if(wear_mask.flags & BLOCK_GAS_SMOKE_EFFECT)
+			return 1
 
 ///FIRE CODE
 /mob/living/carbon/monkey/handle_fire()

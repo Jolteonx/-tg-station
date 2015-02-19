@@ -26,11 +26,6 @@
 #define COLD_GAS_DAMAGE_LEVEL_3 3 //Amount of damage applied when the current breath's temperature passes the 120K point
 
 /mob/living/carbon/human
-	var/oxygen_alert = 0
-	var/toxins_alert = 0
-	var/fire_alert = 0
-	var/pressure_alert = 0
-	var/temperature_alert = 0
 	var/tinttotal = 0				// Total level of visualy impairing items
 
 
@@ -44,17 +39,6 @@
 
 	fire_alert = 0 //Reset this here, because both breathe() and handle_environment() have a chance to set it.
 	tinttotal = tintcheck() //here as both hud updates and status updates call it
-
-	if(..())
-		if(dna)
-			for(var/datum/mutation/human/HM in dna.mutations)
-				HM.on_life(src)
-		if(SSmob.times_fired%4==2 || failed_last_breath) 	//First, resolve location and get a breath
-			breathe() 				//Only try to take a breath every 4 ticks, unless suffocating
-		else //Still give containing object the chance to interact
-			if(istype(loc, /obj/))
-				var/obj/location_as_object = loc
-				location_as_object.handle_internal_lifeform(src, 0)
 
 	//Update our name based on whether our face is obscured/disfigured
 	name = get_visible_name()
@@ -116,7 +100,7 @@
 		if(dna.species.handle_mutations_and_radiation(src))
 			..()
 
-/mob/living/carbon/human/proc/breathe()
+/mob/living/carbon/human/breathe()
 	if(dna)
 		dna.species.breathe(src)
 
@@ -162,27 +146,8 @@
 		dna.species.ExtinguishMob(src)
 	else
 		..()
-
 //END FIRE CODE
 
-	/*
-/mob/living/carbon/human/proc/adjust_body_temperature(current, loc_temp, boost)
-	var/temperature = current
-	var/difference = abs(current-loc_temp)	//get difference
-	var/increments// = difference/10			//find how many increments apart they are
-	if(difference > 50)
-		increments = difference/5
-	else
-		increments = difference/10
-	var/change = increments*boost	// Get the amount to change by (x per increment)
-	var/temp_change
-	if(current < loc_temp)
-		temperature = min(loc_temp, temperature+change)
-	else if(current > loc_temp)
-		temperature = max(loc_temp, temperature-change)
-	temp_change = (temperature - current)
-	return temp_change
-*/
 
 /mob/living/carbon/human/proc/stabilize_temperature_from_calories()
 	switch(bodytemperature)
@@ -372,6 +337,18 @@
 			hud_used.lingchemdisplay.maptext = "<div align='center' valign='middle' style='position:relative; top:0px; left:6px'> <font color='#dd66dd'>[mind.changeling.chem_charges]</font></div>"
 		else
 			hud_used.lingchemdisplay.invisibility = 101
+
+/mob/living/carbon/human/has_smoke_protection()
+	if(wear_mask)
+		if(wear_mask.flags & BLOCK_GAS_SMOKE_EFFECT)
+			. = 1
+	if(glasses)
+		if(glasses.flags & BLOCK_GAS_SMOKE_EFFECT)
+			. = 1
+	if(head)
+		if(head.flags & BLOCK_GAS_SMOKE_EFFECT)
+			. = 1
+	return .
 
 
 #undef HUMAN_MAX_OXYLOSS

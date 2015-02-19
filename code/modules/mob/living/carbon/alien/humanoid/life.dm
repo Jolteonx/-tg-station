@@ -5,7 +5,6 @@
 	toxins_alert = 0
 	fire_alert = 0
 	pass_flags = PASSTABLE
-	var/temperature_alert = 0
 
 
 /mob/living/carbon/alien/humanoid/proc/adjust_body_temperature(current, loc_temp, boost)

@@ -17,6 +17,8 @@
 		if (!ckey)
 			handle_speech_and_mood()
 
+/mob/living/carbon/slime/handle_breathing()
+	return
 
 /mob/living/carbon/slime/proc/AIprocess()  // the master AI process
 

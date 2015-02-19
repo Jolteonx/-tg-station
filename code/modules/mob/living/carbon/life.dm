@@ -1,17 +1,10 @@
-/mob/living/carbon/proc/get_breath_from_internal(volume_needed)
-	if(internal)
-		if (!contents.Find(internal))
-			internal = null
-		if (!wear_mask || !(wear_mask.flags & MASKINTERNALS) )
-			internal = null
-		if(internal)
-			if (internals)
-				internals.icon_state = "internal1"
-			return internal.remove_air_volume(volume_needed)
-		else
-			if (internals)
-				internals.icon_state = "internal0"
-	return
+
+/mob/living/carbon
+	var/oxygen_alert = 0
+	var/toxins_alert = 0
+	var/fire_alert = 0
+	var/pressure_alert = 0
+	var/temperature_alert = 0
 
 /mob/living/carbon/Life()
 	set invisibility = 0
@@ -24,6 +17,9 @@
 	var/datum/gas_mixture/environment = loc.return_air()
 
 	if(stat != DEAD)
+
+		//Breathing, if applicable
+		handle_breathing()
 
 		//Updates the number of stored chemicals for powers
 		handle_changeling()
@@ -66,6 +62,206 @@
 	return .
 
 
+
+///////////////
+// BREATHING //
+///////////////
+
+//Start of a breath chain, calls breathe()
+/mob/living/carbon/proc/handle_breathing()
+	if(SSmob.times_fired%4==2 || failed_last_breath)
+		breathe() //Breathe per 4 ticks, unless suffocating
+	else
+		if(istype(loc, /obj/))
+			var/obj/location_as_object = loc
+			location_as_object.handle_internal_lifeform(src,0)
+
+//Second link in a breath chain, calls check_breath()
+/mob/living/carbon/proc/breathe()
+	if(reagents.has_reagent("lexorin"))
+		return
+	if(istype(loc, /obj/machinery/atmospherics/unary/cryo_cell))
+		return
+
+	var/datum/gas_mixture/environment
+	if(loc)
+		environment = loc.return_air()
+
+	var/datum/gas_mixture/breath
+
+	if(health <= config.health_threshold_crit)
+		losebreath++
+
+	//Suffocate
+	if(losebreath > 0)
+		losebreath--
+		if(prob(10))
+			spawn emote("gasp")
+		if(istype(loc, /obj/))
+			var/obj/loc_as_obj = loc
+			loc_as_obj.handle_internal_lifeform(src,0)
+	else
+		//Breathe from internal
+		breath = get_breath_from_internal(BREATH_VOLUME)
+
+		if(!breath)
+
+			if(isobj(loc)) //Breathe from loc as object
+				var/obj/loc_as_obj = loc
+				breath = loc_as_obj.handle_internal_lifeform(src, BREATH_VOLUME)
+
+			else if(isturf(loc)) //Breathe from loc as turf
+				var/breath_moles = 0
+				if(environment)
+					breath_moles = environment.total_moles()*BREATH_PERCENTAGE
+
+				breath = loc.remove_air(breath_moles)
+
+				//Harmful gasses
+				if(!has_smoke_protection())
+					for(var/obj/effect/effect/chem_smoke/smoke in view(1,src))
+						if(smoke.reagents.total_volume)
+							smoke.reagents.reaction(src,INGEST)
+							spawn(5)
+								if(smoke)
+									smoke.reagents.copy_to(src, 10)
+							break
+
+		else //Breathe from loc as obj again
+			if(istype(loc, /obj/))
+				var/obj/loc_as_obj = loc
+				loc_as_obj.handle_internal_lifeform(src,0)
+
+	check_breath(breath)
+
+	if(breath)
+		loc.assume_air(breath)
+
+/mob/living/carbon/proc/has_smoke_protection()
+	return 0
+
+
+//Third link in a breath chain, calls handle_temperature()
+/mob/living/carbon/proc/check_breath(datum/gas_mixture/breath)
+	if((status_flags & GODMODE))
+		return
+
+	//CRIT
+	if(!breath || (breath.total_moles() == 0))
+		if(reagents.has_reagent("epinephrine"))
+			return
+		adjustOxyLoss(3)
+		failed_last_breath = 1
+		oxygen_alert = max(oxygen_alert, 1)
+
+		return 0
+
+	var/safe_oxy_min = 16
+	var/safe_co2_max = 10
+	var/safe_tox_max = 0.005
+	var/SA_para_min = 1
+	var/SA_sleep_min = 5
+	var/oxygen_used = 0
+	var/breath_pressure = (breath.total_moles()*R_IDEAL_GAS_EQUATION*breath.temperature)/BREATH_VOLUME
+
+	var/O2_partialpressure = (breath.oxygen/breath.total_moles())*breath_pressure
+	var/Toxins_partialpressure = (breath.toxins/breath.total_moles())*breath_pressure
+	var/CO2_partialpressure = (breath.carbon_dioxide/breath.total_moles())*breath_pressure
+
+
+	//OXYGEN
+	if(O2_partialpressure < safe_oxy_min) //Not enough oxygen
+		if(health <= config.health_threshold_crit)
+			if(prob(20))
+				spawn(0) emote("gasp")
+			if(O2_partialpressure > 0)
+				var/ratio = safe_oxy_min/O2_partialpressure
+				adjustOxyLoss(min(5*ratio, 3))
+				failed_last_breath = 1
+				oxygen_used = breath.oxygen*ratio/6
+			else
+				adjustOxyLoss(3)
+				failed_last_breath = 1
+			oxygen_alert = max(oxygen_alert, 1)
+
+	else //Enough oxygen
+		failed_last_breath = 0
+		adjustOxyLoss(-5)
+		oxygen_used = breath.oxygen/6
+		oxygen_alert = 0
+
+	breath.oxygen -= oxygen_used
+	breath.carbon_dioxide += oxygen_used
+
+	//CARBON DIOXIDE
+	if(CO2_partialpressure > safe_co2_max)
+		if(!co2overloadtime)
+			co2overloadtime = world.time
+		else if(world.time - co2overloadtime > 120)
+			Paralyse(3)
+			adjustOxyLoss(3)
+			if(world.time - co2overloadtime > 300)
+				adjustOxyLoss(8)
+		if(prob(20))
+			spawn(0) emote("cough")
+
+	else
+		co2overloadtime = 0
+
+	//TOXINS/PLASMA
+	if(Toxins_partialpressure > safe_tox_max)
+		var/ratio = (breath.toxins/safe_tox_max) * 10
+		if(reagents)
+			reagents.add_reagent("plasma", Clamp(ratio, MIN_PLASMA_DAMAGE, MAX_PLASMA_DAMAGE))
+		toxins_alert = max(toxins_alert, 1)
+	else
+		toxins_alert = 0
+
+	//TRACE GASES
+	if(breath.trace_gases.len)
+		for(var/datum/gas/sleeping_agent/SA in breath.trace_gases)
+			var/SA_partialpressure = (SA.moles/breath.total_moles())*breath_pressure
+			if(SA_partialpressure > SA_para_min)
+				Paralyse(3)
+				if(SA_partialpressure > SA_sleep_min)
+					sleeping = max(sleeping+2, 10)
+			else if(SA_partialpressure > 0.01)
+				if(prob(20))
+					spawn(0) emote(pick("giggle","laugh"))
+
+	//BREATH TEMPERATURE
+	handle_temperature(breath)
+
+	return 1
+
+//Fourth and final link in a breath chain
+/mob/living/carbon/proc/handle_temperature(datum/gas_mixture/breath)
+	if(breath.temperature > (T0C+66)) // Hot air hurts :(
+		if(prob(20))
+			src << "<span class='danger'>You feel a searing heat in your lungs!</span>"
+		fire_alert = max(fire_alert, 2)
+	else
+		fire_alert = 0
+	if(breath.temperature < (T0C-20))
+		if(prob(20))
+			src << "<span class='danger'>You feel your face freezing and an icicle forming in your lungs!</span>"
+	return
+
+
+/mob/living/carbon/proc/get_breath_from_internal(volume_needed)
+	if(internal)
+		if (!contents.Find(internal))
+			internal = null
+		if (!wear_mask || !(wear_mask.flags & MASKINTERNALS) )
+			internal = null
+		if(internal)
+			if (internals)
+				internals.icon_state = "internal1"
+			return internal.remove_air_volume(volume_needed)
+		else
+			if (internals)
+				internals.icon_state = "internal0"
+	return
 
 /mob/living/carbon/proc/handle_changeling()
 	return

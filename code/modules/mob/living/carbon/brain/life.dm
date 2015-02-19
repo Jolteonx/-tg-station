@@ -18,6 +18,8 @@
 						src << "<span class='danger'>STATUS: DANGEROUS LEVELS OF RADIATION DETECTED.</span>"
 		..()
 
+/mob/living/carbon/brain/handle_breathing()
+	return
 
 /mob/living/carbon/brain/handle_environment(datum/gas_mixture/environment)
 	if(!environment)
