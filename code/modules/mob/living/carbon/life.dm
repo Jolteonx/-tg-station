@@ -54,8 +54,6 @@
 	//stuff in the stomach
 	handle_stomach()
 
-	handle_regular_status_updates() // Status updates, death etc.
-
 	update_canmove()
 
 	update_gravity(mob_has_gravity())
@@ -65,6 +63,9 @@
 
 	if(client)
 		handle_regular_hud_updates()
+
+	handle_regular_status_updates() // Status updates, death etc.
+
 
 	return .
 
