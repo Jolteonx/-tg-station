@@ -160,6 +160,13 @@
 
 	return //TODO: DEFERRED
 
+
+/mob/living/carbon/slime/handle_mutations_and_radiation()
+	return
+
+/mob/living/carbon/slime/handle_regular_hud_updates()
+	return
+
 /mob/living/carbon/slime/handle_regular_status_updates()
 
 	if(is_adult)

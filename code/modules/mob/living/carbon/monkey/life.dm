@@ -36,46 +36,29 @@
 	..()
 	return pressure
 
-/mob/living/carbon/monkey/handle_disabilities()
-
 /mob/living/carbon/monkey/handle_mutations_and_radiation()
 
 	if (radiation)
 		if (radiation > 100)
-			radiation = 100
 			Weaken(10)
 			src << "<span class='danger'>You feel weak.</span>"
 			emote("collapse")
 
-		if (radiation < 0)
-			radiation = 0
-
 		switch(radiation)
-			if(0 to 50)
-				radiation--
-				if(prob(25))
-					adjustToxLoss(1)
-					updatehealth()
 
 			if(50 to 75)
-				radiation -= 2
-				adjustToxLoss(1)
 				if(prob(5))
-					radiation -= 5
 					Weaken(3)
 					src << "<span class='danger'>You feel weak.</span>"
 					emote("collapse")
-				updatehealth()
 
 			if(75 to 100)
-				radiation -= 3
-				adjustToxLoss(3)
 				if(prob(1))
 					src << "<span class='danger'>You mutate!</span>"
 					randmutb(src)
 					domutcheck(src,null)
 					emote("gasp")
-				updatehealth()
+		..()
 
 
 /mob/living/carbon/monkey/proc/breathe()
@@ -281,135 +264,28 @@
 	else
 		adjustFireLoss(5.0*discomfort)
 
-/mob/living/carbon/monkey/handle_chemicals_in_body()
+/mob/living/carbon/monkey/handle_disabilities()
 
-	if(reagents) reagents.metabolize(src)
+	//Eyes
+	if(disabilities & BLIND || stat)	//disabled-blind, doesn't get better on its own
+		eye_blind = max(eye_blind, 2)
+	else if(eye_blind)			//blindness, heals slowly over time
+		eye_blind = max(eye_blind-1,0)
+	else if(eye_blurry)			//blurry eyes heal slowly
+		eye_blurry = max(eye_blurry-1, 0)
 
-	if (drowsyness)
-		drowsyness--
-		eye_blurry = max(2, eye_blurry)
-		if (prob(5))
-			sleeping += 1
-			Paralyse(5)
-
-	confused = max(0, confused - 1)
-	// decrement dizziness counter, clamped to 0
-	if(resting)
-		dizziness = max(0, dizziness - 5)
+	//Ears
+	if(disabilities & DEAF)		//disabled-deaf, doesn't get better on its own
+		setEarDamage(-1, max(ear_deaf, 1))
 	else
-		dizziness = max(0, dizziness - 1)
-
-	updatehealth()
-
-	return //TODO: DEFERRED
-
-/mob/living/carbon/monkey/handle_regular_status_updates()
-	updatehealth()
-
-	if(stat == DEAD)	//DEAD. BROWN BREAD. SWIMMING WITH THE SPESS CARP
-		silent = 0
-	else				//ALIVE. LIGHTS ARE ON
-		if(health < config.health_threshold_dead || !getorgan(/obj/item/organ/brain))
-			death()
-			stat = DEAD
-			silent = 0
-			return 1
-
-		//UNCONSCIOUS. NO-ONE IS HOME
-		if( (getOxyLoss() > 25) || (config.health_threshold_crit >= health) )
-			if( health <= 20 && prob(1) )
-				spawn(0)
-					emote("gasp")
-			if(!reagents.has_reagent("epinephrine"))
-				adjustOxyLoss(1)
-			Paralyse(3)
-
-		if(paralysis)
-			AdjustParalysis(-1)
-			stat = UNCONSCIOUS
-		else if(sleeping)
-			sleeping = max(sleeping-1, 0)
-			stat = UNCONSCIOUS
-			if( prob(10) && health )
-				spawn(0)
-					emote("snore")
-		//CONSCIOUS
-		else
-			stat = CONSCIOUS
-
-		//Eyes
-		if(disabilities & BLIND || stat)	//disabled-blind, doesn't get better on its own
-			eye_blind = max(eye_blind, 2)
-		else if(eye_blind)			//blindness, heals slowly over time
-			eye_blind = max(eye_blind-1,0)
-		else if(eye_blurry)			//blurry eyes heal slowly
-			eye_blurry = max(eye_blurry-1, 0)
-
-		//Ears
-		if(disabilities & DEAF)		//disabled-deaf, doesn't get better on its own
-			setEarDamage(-1, max(ear_deaf, 1))
-		else
-			// deafness heals slowly over time, unless ear_damage is over 100
-			if (ear_damage < 100)
-				adjustEarDamage(-0.05,-1)
-
-		//Other
-		if(stunned)
-			AdjustStunned(-1)
-
-		if(weakened)
-			weakened = max(weakened-1,0)
-
-		if(stuttering)
-			stuttering = max(stuttering-1, 0)
-
-		if(silent)
-			silent = max(silent-1, 0)
-
-		if(druggy)
-			druggy = max(druggy-1, 0)
-
-		CheckStamina()
-	return 1
+		// deafness heals slowly over time, unless ear_damage is over 100
+		if(ear_damage < 100)
+			adjustEarDamage(-0.05,-1)
 
 
-/mob/living/carbon/monkey/handle_regular_hud_updates()
+/mob/living/carbon/monkey/handle_hud_icons()
 
-	if (stat == 2)
-		sight |= SEE_TURFS
-		sight |= SEE_MOBS
-		sight |= SEE_OBJS
-		see_in_dark = 8
-		see_invisible = SEE_INVISIBLE_LEVEL_TWO
-	else if (stat != 2)
-		sight &= ~SEE_TURFS
-		sight &= ~SEE_MOBS
-		sight &= ~SEE_OBJS
-		see_in_dark = 2
-		see_invisible = SEE_INVISIBLE_LIVING
-		if(see_override)
-			see_invisible = see_override
-
-	if (healths)
-		if (stat != 2)
-			switch(health)
-				if(100 to INFINITY)
-					healths.icon_state = "health0"
-				if(80 to 100)
-					healths.icon_state = "health1"
-				if(60 to 80)
-					healths.icon_state = "health2"
-				if(40 to 60)
-					healths.icon_state = "health3"
-				if(20 to 40)
-					healths.icon_state = "health4"
-				if(0 to 20)
-					healths.icon_state = "health5"
-				else
-					healths.icon_state = "health6"
-		else
-			healths.icon_state = "health7"
-
+	handle_hud_icons_health()
 
 	if(pressure)
 		pressure.icon_state = "pressure[pressure_alert]"
@@ -447,31 +323,6 @@
 			else
 				bodytemp.icon_state = "temp-4"
 
-	client.screen.Remove(global_hud.blurry,global_hud.druggy,global_hud.vimpaired)
-
-	if(blind && stat != DEAD)
-		if(eye_blind)
-			blind.layer = 18
-		else
-			blind.layer = 0
-
-			if(disabilities & NEARSIGHT)
-				client.screen += global_hud.vimpaired
-
-			if(eye_blurry)
-				client.screen += global_hud.blurry
-
-			if(druggy)
-				client.screen += global_hud.druggy
-
-	if (stat != 2)
-		if (machine)
-			if (!( machine.check_eye(src) ))
-				reset_view(null)
-		else
-			if(!client.adminobs)
-				reset_view(null)
-
 	return 1
 
 /mob/living/carbon/monkey/handle_random_events()
@@ -482,11 +333,13 @@
 
 
 /mob/living/carbon/monkey/handle_changeling()
-	if(mind && mind.changeling)
-		mind.changeling.regenerate()
-		hud_used.lingchemdisplay.invisibility = 0
-		hud_used.lingchemdisplay.maptext = "<div align='center' valign='middle' style='position:relative; top:0px; left:6px'> <font color='#dd66dd'>[src.mind.changeling.chem_charges]</font></div>"
-
+	if(mind)
+		if(mind.changeling)
+			mind.changeling.regenerate()
+			hud_used.lingchemdisplay.invisibility = 0
+			hud_used.lingchemdisplay.maptext = "<div align='center' valign='middle' style='position:relative; top:0px; left:6px'> <font color='#dd66dd'>[mind.changeling.chem_charges]</font></div>"
+		else
+			hud_used.lingchemdisplay.invisibility = 101
 
 ///FIRE CODE
 /mob/living/carbon/monkey/handle_fire()

@@ -16,31 +16,6 @@
 				location_as_object.handle_internal_lifeform(src, 0)
 		return 1
 
-
-/mob/living/carbon/alien/handle_chemicals_in_body()
-	if(reagents)
-		reagents.metabolize(src)
-
-	if (drowsyness)
-		drowsyness--
-		eye_blurry = max(2, eye_blurry)
-		if (prob(5))
-			sleeping += 1
-			Paralyse(5)
-
-	confused = max(0, confused - 1)
-	// decrement dizziness counter, clamped to 0
-	if(resting)
-		dizziness = max(0, dizziness - 5)
-		jitteriness = max(0, jitteriness - 5)
-	else
-		dizziness = max(0, dizziness - 1)
-		jitteriness = max(0, jitteriness - 1)
-
-	updatehealth()
-
-	return //TODO: DEFERRED
-
 /mob/living/carbon/alien/proc/breathe()
 	if(reagents)
 		if(reagents.has_reagent("lexorin")) return
@@ -132,4 +107,93 @@
 
 	return 1
 
+/mob/living/carbon/alien/humanoid/handle_regular_status_updates()
+	..()
+	//natural reduction of movement delay due to stun.
+	if(move_delay_add > 0)
+		move_delay_add = max(0, move_delay_add - rand(1, 2))
 
+	return 1
+
+/mob/living/carbon/alien/handle_vision()
+
+	client.screen.Remove(global_hud.blurry, global_hud.druggy, global_hud.vimpaired, global_hud.darkMask)
+
+	if (stat == 2)
+		sight |= SEE_TURFS
+		sight |= SEE_MOBS
+		sight |= SEE_OBJS
+		see_in_dark = 8
+		see_invisible = SEE_INVISIBLE_LEVEL_TWO
+	else if (stat != 2)
+		sight |= SEE_MOBS
+		sight &= ~SEE_TURFS
+		sight &= ~SEE_OBJS
+		if(nightvision)
+			see_in_dark = 8
+			see_invisible = SEE_INVISIBLE_MINIMUM
+		else if(!nightvision)
+			see_in_dark = 4
+			see_invisible = 45
+		if(see_override)
+			see_invisible = see_override
+
+	if ((blind && stat != 2))
+		if ((eye_blind))
+			blind.layer = 18
+		else
+			blind.layer = 0
+
+			if (disabilities & NEARSIGHT)
+				client.screen += global_hud.vimpaired
+
+			if (eye_blurry)
+				client.screen += global_hud.blurry
+
+			if (druggy)
+				client.screen += global_hud.druggy
+
+	if (stat != 2)
+		if(machine)
+			if (!( machine.check_eye(src) ))
+				reset_view(null)
+		else
+			if(!client.adminobs)
+				reset_view(null)
+
+
+/mob/living/carbon/alien/handle_hud_icons()
+
+	handle_hud_icons_health()
+
+	if(pullin)
+		if(pulling)
+			pullin.icon_state = "pull"
+		else
+			pullin.icon_state = "pull0"
+
+
+	if (toxin)	toxin.icon_state = "tox[toxins_alert ? 1 : 0]"
+	if (oxygen) oxygen.icon_state = "oxy[oxygen_alert ? 1 : 0]"
+	if (fire) fire.icon_state = "fire[fire_alert ? 1 : 0]"
+	//NOTE: the alerts dont reset when youre out of danger. dont blame me,
+	//blame the person who coded them. Temporary fix added.
+
+	return 1
+
+/mob/living/carbon/alien/handle_disabilities()
+	//Eyes
+	if(disabilities & BLIND)		//disabled-blind, doesn't get better on its own
+		eye_blind = max(eye_blind, 1)
+	else if(eye_blind)			//blindness, heals slowly over time
+		eye_blind = max(eye_blind-1,0)
+	else if(eye_blurry)	//blurry eyes heal slowly
+		eye_blurry = max(eye_blurry-1, 0)
+
+	//Ears
+	if(disabilities & DEAF)		//disabled-deaf, doesn't get better on its own
+		setEarDamage(-1, max(ear_deaf, 1))
+	else
+		adjustEarDamage(-1, (ear_damage < 25 ? -0.05 : 0))
+		//deafness, heals slowly over time
+		//ear damage heals slowly under this threshold. otherwise you'll need earmuffs

@@ -111,32 +111,6 @@
 					fire_alert = max(fire_alert, 2)
 	return
 
-/mob/living/carbon/alien/handle_mutations_and_radiation()
-
-	// Aliens love radiation nom nom nom
-	if (radiation)
-		if (radiation > 100)
-			radiation = 100
-
-		if (radiation < 0)
-			radiation = 0
-
-		switch(radiation)
-			if(0 to 50)
-				radiation--
-				if(prob(25))
-					adjustToxLoss(1)
-
-			if(50 to 75)
-				radiation -= 2
-				adjustToxLoss(1)
-				if(prob(5))
-					radiation -= 5
-
-			if(75 to 100)
-				radiation -= 3
-				adjustToxLoss(3)
-
 /mob/living/carbon/alien/handle_fire()//Aliens on fire code
 	if(..())
 		return

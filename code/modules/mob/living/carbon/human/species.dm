@@ -390,7 +390,6 @@
 	////////
 
 /datum/species/proc/handle_chemicals_in_body(var/mob/living/carbon/human/H)
-	if(H.reagents) H.reagents.metabolize(H)
 
 	//The fucking FAT mutation is the dumbest shit ever. It makes the code so difficult to work with
 	if(H.disabilities & FAT)
@@ -442,22 +441,6 @@
 			H << "<span class='notice'>You no longer feel vigorous.</span>"
 		H.metabolism_efficiency = 1
 
-	if (H.drowsyness)
-		H.drowsyness--
-		H.eye_blurry = max(2, H.eye_blurry)
-		if (prob(5))
-			H.sleeping += 1
-			H.Paralyse(5)
-
-	H.confused = max(0, H.confused - 1)
-	// decrement dizziness counter, clamped to 0
-	if(H.resting)
-		H.dizziness = max(0, H.dizziness - 15)
-		H.jitteriness = max(0, H.jitteriness - 15)
-	else
-		H.dizziness = max(0, H.dizziness - 3)
-		H.jitteriness = max(0, H.jitteriness - 3)
-
 	H.updatehealth()
 
 	return
@@ -475,13 +458,6 @@
 
 		if(H.seer)
 			H.see_invisible = SEE_INVISIBLE_OBSERVER
-
-		if(H.mind)
-			if(H.mind.changeling)
-				H.hud_used.lingchemdisplay.invisibility = 0
-				H.hud_used.lingchemdisplay.maptext = "<div align='center' valign='middle' style='position:relative; top:0px; left:6px'> <font color='#dd66dd'>[H.mind.changeling.chem_charges]</font></div>"
-			else
-				H.hud_used.lingchemdisplay.invisibility = 101
 
 		if(H.glasses)
 			if(istype(H.glasses, /obj/item/clothing/glasses))
@@ -617,29 +593,17 @@
 
 /datum/species/proc/handle_mutations_and_radiation(var/mob/living/carbon/human/H)
 
-	if (H.radiation && !(RADIMMUNE in specflags))
-		if (H.radiation > 100)
-			H.radiation = 100
-			H.Weaken(10)
-			H << "<span class='danger'>You feel weak.</span>"
-			H.emote("collapse")
+	if(!(RADIMMUNE in specflags))
+		if(H.radiation)
+			if (H.radiation > 100)
+				H.Weaken(10)
+				H << "<span class='danger'>You feel weak.</span>"
+				H.emote("collapse")
 
-		if (H.radiation < 0)
-			H.radiation = 0
-
-		else
 			switch(H.radiation)
-				if(0 to 50)
-					H.radiation--
-					if(prob(25))
-						H.adjustToxLoss(1)
-						H.updatehealth()
 
 				if(50 to 75)
-					H.radiation -= 2
-					H.adjustToxLoss(1)
 					if(prob(5))
-						H.radiation -= 5
 						H.Weaken(3)
 						H << "<span class='danger'>You feel weak.</span>"
 						H.emote("collapse")
@@ -650,17 +614,14 @@
 								H.facial_hair_style = "Shaved"
 								H.hair_style = "Bald"
 								H.update_hair()
-					H.updatehealth()
 
 				if(75 to 100)
-					H.radiation -= 3
-					H.adjustToxLoss(3)
 					if(prob(1))
 						H << "<span class='danger'>You mutate!</span>"
 						randmutb(H)
 						domutcheck(H,null)
 						H.emote("gasp")
-					H.updatehealth()
+		return 1
 
 ////////////////
 // MOVE SPEED //
