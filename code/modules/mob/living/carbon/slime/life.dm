@@ -6,6 +6,11 @@
 	var/SStun = 0 // stun variable
 
 /mob/living/carbon/slime/Life()
+	set invisibility = 0
+	set background = BACKGROUND_ENABLED
+
+	if (notransform)
+		return
 	if(..())
 		handle_nutrition()
 		handle_targets()

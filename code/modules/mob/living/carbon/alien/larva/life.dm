@@ -4,7 +4,11 @@
 	var/temperature_alert = 0
 
 /mob/living/carbon/alien/larva/Life()
+	set invisibility = 0
+	set background = BACKGROUND_ENABLED
 
+	if (notransform)
+		return
 	if(..())
 		// GROW!
 		if(amount_grown < max_grown)

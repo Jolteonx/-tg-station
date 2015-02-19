@@ -36,6 +36,11 @@
 
 
 /mob/living/carbon/human/Life()
+	set invisibility = 0
+	set background = BACKGROUND_ENABLED
+
+	if (notransform)
+		return
 
 	fire_alert = 0 //Reset this here, because both breathe() and handle_environment() have a chance to set it.
 	tinttotal = tintcheck() //here as both hud updates and status updates call it

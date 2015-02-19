@@ -1,6 +1,10 @@
 
 /mob/living/carbon/alien/Life()
+	set invisibility = 0
+	set background = BACKGROUND_ENABLED
 
+	if (notransform)
+		return
 	if(..())
 		//First, resolve location and get a breath
 		if(SSair.times_fired%4==2)

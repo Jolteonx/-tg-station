@@ -23,11 +23,6 @@
 		return
 	var/datum/gas_mixture/environment = loc.return_air()
 
-	//Handle temperature/pressure differences between body and environment
-	handle_environment(environment)
-
-	handle_regular_status_updates() // Status updates, death etc.
-
 	if(stat != DEAD)
 
 		//Updates the number of stored chemicals for powers
@@ -50,10 +45,16 @@
 
 		. = 1
 
+
+	//Handle temperature/pressure differences between body and environment
+	handle_environment(environment)
+
 	handle_fire()
 
 	//stuff in the stomach
 	handle_stomach()
+
+	handle_regular_status_updates() // Status updates, death etc.
 
 	update_canmove()
 
