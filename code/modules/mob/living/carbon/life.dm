@@ -495,8 +495,6 @@
 				else
 					client.screen += global_hud.vimpaired
 
-
-
 	if (stat != DEAD)
 		if(machine)
 			if (!( machine.check_eye(src) ))
@@ -504,6 +502,7 @@
 		else
 			if(!client.adminobs)
 				reset_view(null)
+
 
 /mob/living/carbon/proc/handle_hud_icons()
 	return
