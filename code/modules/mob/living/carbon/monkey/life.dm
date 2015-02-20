@@ -10,15 +10,7 @@
 	if (notransform)
 		return
 
-	if(..())
-		//First, resolve location and get a breath
-		if(SSmob.times_fired%4==2)
-			//Only try to take a breath every 4 seconds, unless suffocating
-			breathe()
-		else //Still give containing object the chance to interact
-			if(istype(loc, /obj/))
-				var/obj/location_as_object = loc
-				location_as_object.handle_internal_lifeform(src, 0)
+	..()
 
 	if(!client && stat == CONSCIOUS)
 		if(prob(33) && canmove && isturf(loc) && !pulledby && !grabbed_by.len)
@@ -100,25 +92,6 @@
 		adjustFireLoss(20.0*discomfort)
 	else
 		adjustFireLoss(5.0*discomfort)
-
-/mob/living/carbon/monkey/handle_disabilities()
-
-	//Eyes
-	if(disabilities & BLIND || stat)	//disabled-blind, doesn't get better on its own
-		eye_blind = max(eye_blind, 2)
-	else if(eye_blind)			//blindness, heals slowly over time
-		eye_blind = max(eye_blind-1,0)
-	else if(eye_blurry)			//blurry eyes heal slowly
-		eye_blurry = max(eye_blurry-1, 0)
-
-	//Ears
-	if(disabilities & DEAF)		//disabled-deaf, doesn't get better on its own
-		setEarDamage(-1, max(ear_deaf, 1))
-	else
-		// deafness heals slowly over time, unless ear_damage is over 100
-		if(ear_damage < 100)
-			adjustEarDamage(-0.05,-1)
-
 
 /mob/living/carbon/monkey/handle_hud_icons()
 

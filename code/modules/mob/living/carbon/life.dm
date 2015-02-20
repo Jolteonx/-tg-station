@@ -150,7 +150,7 @@
 	if(!breath || (breath.total_moles() == 0))
 		if(reagents.has_reagent("epinephrine"))
 			return
-		adjustOxyLoss(3)
+		adjustOxyLoss(1)
 		failed_last_breath = 1
 		oxygen_alert = max(oxygen_alert, 1)
 
@@ -158,7 +158,7 @@
 
 	var/safe_oxy_min = 16
 	var/safe_co2_max = 10
-	var/safe_tox_max = 0.005
+	var/safe_tox_max = 0.05
 	var/SA_para_min = 1
 	var/SA_sleep_min = 5
 	var/oxygen_used = 0
@@ -171,18 +171,18 @@
 
 	//OXYGEN
 	if(O2_partialpressure < safe_oxy_min) //Not enough oxygen
-		if(health <= config.health_threshold_crit)
-			if(prob(20))
-				spawn(0) emote("gasp")
-			if(O2_partialpressure > 0)
-				var/ratio = safe_oxy_min/O2_partialpressure
-				adjustOxyLoss(min(5*ratio, 3))
-				failed_last_breath = 1
-				oxygen_used = breath.oxygen*ratio/6
-			else
-				adjustOxyLoss(3)
-				failed_last_breath = 1
-			oxygen_alert = max(oxygen_alert, 1)
+		if(prob(20))
+			spawn(0)
+				emote("gasp")
+		if(O2_partialpressure > 0)
+			var/ratio = safe_oxy_min/O2_partialpressure
+			adjustOxyLoss(min(5*ratio, 3))
+			failed_last_breath = 1
+			oxygen_used = breath.oxygen*ratio/6
+		else
+			adjustOxyLoss(3)
+			failed_last_breath = 1
+		oxygen_alert = max(oxygen_alert, 1)
 
 	else //Enough oxygen
 		failed_last_breath = 0
@@ -315,7 +315,22 @@
 	return
 
 /mob/living/carbon/proc/handle_disabilities()
-	return
+	//Eyes
+	if(disabilities & BLIND || stat)	//disabled-blind, doesn't get better on its own
+		eye_blind = max(eye_blind, 1)
+	else if(eye_blind)			//blindness, heals slowly over time
+		eye_blind = max(eye_blind-1,0)
+	else if(eye_blurry)			//blurry eyes heal slowly
+		eye_blurry = max(eye_blurry-1, 0)
+
+	//Ears
+	if(disabilities & DEAF)		//disabled-deaf, doesn't get better on its own
+		setEarDamage(-1, max(ear_deaf, 1))
+	else
+		// deafness heals slowly over time, unless ear_damage is over 100
+		if(ear_damage < 100)
+			adjustEarDamage(-0.05,-1)
+
 
 /mob/living/carbon/proc/handle_blood()
 	return
@@ -459,8 +474,8 @@
 		if(see_override)
 			see_invisible = see_override
 
-	if ((blind && stat != DEAD))
-		if (eye_blind)
+	if(blind && stat != DEAD)
+		if(eye_blind)
 			blind.layer = 18
 		else
 			blind.layer = 0
@@ -473,6 +488,14 @@
 
 			if (druggy)
 				client.screen += global_hud.druggy
+
+			if(eye_stat > 20)
+				if(eye_stat > 30)
+					client.screen += global_hud.darkMask
+				else
+					client.screen += global_hud.vimpaired
+
+
 
 	if (stat != DEAD)
 		if(machine)
@@ -520,27 +543,26 @@
 			if(health <= config.health_threshold_crit)
 				var/image/I = image("icon" = 'icons/mob/screen_full.dmi', "icon_state" = "passage0")
 				I.blend_mode = BLEND_OVERLAY //damageoverlay is BLEND_MULTIPLY
-				var/critstep = (config.health_threshold_crit + config.health_threshold_dead)/10
 				switch(health)
-					if(2*critstep to critstep)
+					if(-20 to -10)
 						I.icon_state = "passage1"
-					if(3*critstep to 2*critstep)
+					if(-30 to -20)
 						I.icon_state = "passage2"
-					if(4*critstep to 3*critstep)
+					if(-40 to -30)
 						I.icon_state = "passage3"
-					if(5*critstep to 4*critstep)
+					if(-50 to -40)
 						I.icon_state = "passage4"
-					if(6*critstep to 5*critstep)
+					if(-60 to -50)
 						I.icon_state = "passage5"
-					if(7*critstep to 6*critstep)
+					if(-70 to -60)
 						I.icon_state = "passage6"
-					if(8*critstep to 7*critstep)
+					if(-80 to -70)
 						I.icon_state = "passage7"
-					if(9*critstep to 8*critstep)
+					if(-90 to -80)
 						I.icon_state = "passage8"
-					if(9.5*critstep to 9*critstep)
+					if(-95 to -90)
 						I.icon_state = "passage9"
-					if(-INFINITY to 9.5*critstep)
+					if(-INFINITY to -95)
 						I.icon_state = "passage10"
 				damageoverlay.overlays += I
 		else

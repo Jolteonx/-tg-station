@@ -6,8 +6,6 @@
 #define TINT_IMPAIR 2			//Threshold of tint level to apply weld mask overlay
 #define TINT_BLIND 3			//Threshold of tint level to obscure vision fully
 
-#define HUMAN_MAX_OXYLOSS 3 //Defines how much oxyloss humans can get per tick. A tile with no air at all (such as space) applies this value, otherwise it's a percentage of it.
-
 #define HEAT_DAMAGE_LEVEL_1 2 //Amount of damage applied when your body temperature just passes the 360.15k safety point
 #define HEAT_DAMAGE_LEVEL_2 3 //Amount of damage applied when your body temperature passes the 400K point
 #define HEAT_DAMAGE_LEVEL_3 8 //Amount of damage applied when your body temperature passes the 460K point and you are on fire
@@ -40,6 +38,8 @@
 	fire_alert = 0 //Reset this here, because both breathe() and handle_environment() have a chance to set it.
 	tinttotal = tintcheck() //here as both hud updates and status updates call it
 
+	..()
+
 	//Update our name based on whether our face is obscured/disfigured
 	name = get_visible_name()
 
@@ -66,25 +66,17 @@
 
 /mob/living/carbon/human/handle_disabilities()
 	//Eyes
-	if(disabilities & BLIND || stat)	//disabled-blind, doesn't get better on its own
-		eye_blind = max(eye_blind, 1)
-	else if(eye_blind)			//blindness, heals slowly over time
-		eye_blind = max(eye_blind-1,0)
-	else if(tinttotal >= TINT_BLIND)		//covering your eyes heals blurry eyes faster
-		eye_blurry = max(eye_blurry-3, 0)
-	else if(eye_blurry)	//blurry eyes heal slowly
-		eye_blurry = max(eye_blurry-1, 0)
+	if(!(disabilities & BLIND))
+		if(tinttotal >= TINT_BLIND)		//covering your eyes heals blurry eyes faster
+			eye_blurry = max(eye_blurry-2, 0)
 
 	//Ears
-	if(disabilities & DEAF)	//disabled-deaf, doesn't get better on its own
-		setEarDamage(-1, max(ear_deaf, 1))
-	else if (ear_damage < 100) // deafness heals slowly over time, unless ear_damage is over 100
-		if(istype(ears, /obj/item/clothing/ears/earmuffs)) // earmuffs rest your ears, healing 3x faster, but keeping you deaf.
-			setEarDamage(max(ear_damage-0.15, 0), max(ear_deaf - 1, 1))
-		else
-			adjustEarDamage(-0.05, -1)
+	if(!(disabilities & DEAF))
+		if(istype(ears, /obj/item/clothing/ears/earmuffs)) // earmuffs rest your ears, healing ear_deaf faster and ear_damage, but keeping you deaf.
+			setEarDamage(max(ear_damage-0.10, 0), max(ear_deaf - 1, 1))
 
-	if (getBrainLoss() >= 60 && stat != 2)
+
+	if (getBrainLoss() >= 60 && stat != DEAD)
 		if (prob(3))
 			switch(pick(1,2,3))
 				if(1)
@@ -349,6 +341,3 @@
 		if(head.flags & BLOCK_GAS_SMOKE_EFFECT)
 			. = 1
 	return .
-
-
-#undef HUMAN_MAX_OXYLOSS

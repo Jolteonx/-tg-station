@@ -107,6 +107,29 @@
 					fire_alert = max(fire_alert, 2)
 	return
 
+
+/mob/living/carbon/alien/ex_act(severity, target)
+	..()
+
+	switch (severity)
+		if (1.0)
+			gib()
+			return
+
+		if (2.0)
+			adjustBruteLoss(60)
+			adjustFireLoss(60)
+			adjustEarDamage(30,120)
+
+		if(3.0)
+			adjustBruteLoss(30)
+			if (prob(50))
+				Paralyse(1)
+			adjustEarDamage(15,60)
+
+	updatehealth()
+
+
 /mob/living/carbon/alien/handle_fire()//Aliens on fire code
 	if(..())
 		return

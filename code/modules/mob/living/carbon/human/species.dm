@@ -1002,20 +1002,9 @@
 				breath_moles = environment.total_moles()*BREATH_PERCENTAGE
 
 				breath = H.loc.remove_air(breath_moles)
+
 				// Handle chem smoke effect  -- Doohl
-				var/block = 0
-				if(H.wear_mask)
-					if(H.wear_mask.flags & BLOCK_GAS_SMOKE_EFFECT)
-						block = 1
-				if(H.glasses)
-					if(H.glasses.flags & BLOCK_GAS_SMOKE_EFFECT)
-						block = 1
-				if(H.head)
-					if(H.head.flags & BLOCK_GAS_SMOKE_EFFECT)
-						block = 1
-
-				if(!block)
-
+				if(!H.has_smoke_protection())
 					for(var/obj/effect/effect/chem_smoke/smoke in view(1, H))
 						if(smoke.reagents.total_volume)
 							smoke.reagents.reaction(H, INGEST)
@@ -1029,12 +1018,12 @@
 				var/obj/location_as_object = H.loc
 				location_as_object.handle_internal_lifeform(H, 0)
 
-	handle_breath(breath, H)
+	check_breath(breath, H)
 
 	if(breath)
 		H.loc.assume_air(breath)
 
-/datum/species/proc/handle_breath(datum/gas_mixture/breath, var/mob/living/carbon/human/H)
+/datum/species/proc/check_breath(datum/gas_mixture/breath, var/mob/living/carbon/human/H)
 	if((H.status_flags & GODMODE))
 		return
 

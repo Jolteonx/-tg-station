@@ -30,7 +30,7 @@
 	//BREATH TEMPERATURE
 	handle_temperature(breath)
 
-/mob/living/carbon/alien/humanoid/handle_temperature(datum/gas_mixture/breath)
+/mob/living/carbon/alien/handle_temperature(datum/gas_mixture/breath)
 	if(breath.temperature > (T0C+66)) // Hot air hurts :(
 		if(prob(20))
 			src << "<span class='danger'>You feel a searing heat in your lungs!</span>"
@@ -40,7 +40,7 @@
 
 	return 1
 
-/mob/living/carbon/alien/humanoid/handle_regular_status_updates()
+/mob/living/carbon/alien/handle_regular_status_updates()
 	..()
 	//natural reduction of movement delay due to stun.
 	if(move_delay_add > 0)
@@ -72,7 +72,7 @@
 			see_invisible = see_override
 
 	if ((blind && stat != 2))
-		if ((eye_blind))
+		if((eye_blind))
 			blind.layer = 18
 		else
 			blind.layer = 0
@@ -111,20 +111,3 @@
 	if (fire) fire.icon_state = "fire[fire_alert ? 1 : 0]"
 
 	return 1
-
-/mob/living/carbon/alien/handle_disabilities()
-	//Eyes
-	if(disabilities & BLIND)		//disabled-blind, doesn't get better on its own
-		eye_blind = max(eye_blind, 1)
-	else if(eye_blind)			//blindness, heals slowly over time
-		eye_blind = max(eye_blind-1,0)
-	else if(eye_blurry)	//blurry eyes heal slowly
-		eye_blurry = max(eye_blurry-1, 0)
-
-	//Ears
-	if(disabilities & DEAF)		//disabled-deaf, doesn't get better on its own
-		setEarDamage(-1, max(ear_deaf, 1))
-	else
-		adjustEarDamage(-1, (ear_damage < 25 ? -0.05 : 0))
-		//deafness, heals slowly over time
-		//ear damage heals slowly under this threshold. otherwise you'll need earmuffs
