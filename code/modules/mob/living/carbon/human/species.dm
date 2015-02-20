@@ -1122,11 +1122,11 @@
 				if(prob(20))
 					spawn(0) H.emote(pick("giggle", "laugh"))
 
-	handle_temperature(breath, H)
+	handle_breath_temperature(breath, H)
 
 	return 1
 
-/datum/species/proc/handle_temperature(datum/gas_mixture/breath, var/mob/living/carbon/human/H) // called by human/life, handles temperatures
+/datum/species/proc/handle_breath_temperature(datum/gas_mixture/breath, var/mob/living/carbon/human/H) // called by human/life, handles temperatures
 	if( (abs(310.15 - breath.temperature) > 50) && !(mutations_list[COLDRES] in H.dna.mutations) && !(COLDRES in specflags)) // Hot air hurts :(
 		if(breath.temperature < 260.15)
 			if(prob(20))

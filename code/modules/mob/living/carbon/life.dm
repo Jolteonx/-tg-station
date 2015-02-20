@@ -141,7 +141,7 @@
 	return 0
 
 
-//Third link in a breath chain, calls handle_temperature()
+//Third link in a breath chain, calls handle_breath_temperature()
 /mob/living/carbon/proc/check_breath(datum/gas_mixture/breath)
 	if((status_flags & GODMODE))
 		return
@@ -230,12 +230,12 @@
 					spawn(0) emote(pick("giggle","laugh"))
 
 	//BREATH TEMPERATURE
-	handle_temperature(breath)
+	handle_breath_temperature(breath)
 
 	return 1
 
 //Fourth and final link in a breath chain
-/mob/living/carbon/proc/handle_temperature(datum/gas_mixture/breath)
+/mob/living/carbon/proc/handle_breath_temperature(datum/gas_mixture/breath)
 	if(breath.temperature > (T0C+66)) // Hot air hurts :(
 		if(prob(20))
 			src << "<span class='danger'>You feel a searing heat in your lungs!</span>"
@@ -262,6 +262,7 @@
 			if (internals)
 				internals.icon_state = "internal0"
 	return
+
 
 /mob/living/carbon/proc/handle_changeling()
 	return
@@ -314,24 +315,6 @@
 	updatehealth()
 	return
 
-/mob/living/carbon/proc/handle_disabilities()
-	//Eyes
-	if(disabilities & BLIND || stat)	//blindness from disability or unconsciousness doesn't get better on its own
-		eye_blind = max(eye_blind, 1)
-	else if(eye_blind)			//blindness, heals slowly over time
-		eye_blind = max(eye_blind-1,0)
-	else if(eye_blurry)			//blurry eyes heal slowly
-		eye_blurry = max(eye_blurry-1, 0)
-
-	//Ears
-	if(disabilities & DEAF)		//disabled-deaf, doesn't get better on its own
-		setEarDamage(-1, max(ear_deaf, 1))
-	else
-		// deafness heals slowly over time, unless ear_damage is over 100
-		if(ear_damage < 100)
-			adjustEarDamage(-0.05,-1)
-
-
 /mob/living/carbon/proc/handle_blood()
 	return
 
@@ -340,6 +323,23 @@
 
 /mob/living/carbon/proc/handle_environment(var/datum/gas_mixture/environment)
 	return
+
+/mob/living/carbon/proc/handle_stomach()
+	spawn(0)
+		for(var/mob/living/M in stomach_contents)
+			if(M.loc != src)
+				stomach_contents.Remove(M)
+				continue
+			if(istype(M, /mob/living/carbon) && stat != 2)
+				if(M.stat == 2)
+					M.death(1)
+					stomach_contents.Remove(M)
+					qdel(M)
+					continue
+				if(SSmob.times_fired%3==1)
+					if(!(M.status_flags & GODMODE))
+						M.adjustBruteLoss(5)
+					nutrition += 10
 
 /mob/living/carbon/proc/handle_regular_status_updates()
 
@@ -354,8 +354,6 @@
 			silent = 0
 			return 1
 
-
-		//UNCONSCIOUS. NO-ONE IS HOME
 		if( (getOxyLoss() > 50) || (config.health_threshold_crit >= health) )
 			Paralyse(3)
 
@@ -370,7 +368,10 @@
 			if( prob(10) && health && !hal_crit )
 				spawn(0)
 					emote("snore")
-		//CONSCIOUS
+
+		else if (status_flags & FAKEDEATH)
+			stat = UNCONSCIOUS
+
 		else
 			stat = CONSCIOUS
 
@@ -454,78 +455,25 @@
 		CheckStamina()
 	return 1
 
+/mob/living/carbon/proc/handle_disabilities()
+	//Eyes
+	if(disabilities & BLIND || stat)	//blindness from disability or unconsciousness doesn't get better on its own
+		eye_blind = max(eye_blind, 1)
+	else if(eye_blind)			//blindness, heals slowly over time
+		eye_blind = max(eye_blind-1,0)
+	else if(eye_blurry)			//blurry eyes heal slowly
+		eye_blurry = max(eye_blurry-1, 0)
 
-/mob/living/carbon/proc/handle_vision()
-
-	client.screen.Remove(global_hud.blurry, global_hud.druggy, global_hud.vimpaired, global_hud.darkMask)
-
-	if(stat == DEAD)
-		sight |= SEE_TURFS
-		sight |= SEE_MOBS
-		sight |= SEE_OBJS
-		see_in_dark = 8
-		see_invisible = SEE_INVISIBLE_LEVEL_TWO
+	//Ears
+	if(disabilities & DEAF)		//disabled-deaf, doesn't get better on its own
+		setEarDamage(-1, max(ear_deaf, 1))
 	else
-		sight &= ~SEE_TURFS
-		sight &= ~SEE_MOBS
-		sight &= ~SEE_OBJS
-		see_in_dark = 2
-		see_invisible = SEE_INVISIBLE_LIVING
-		if(see_override)
-			see_invisible = see_override
+		// deafness heals slowly over time, unless ear_damage is over 100
+		if(ear_damage < 100)
+			adjustEarDamage(-0.05,-1)
 
-		if(blind)
-			if(eye_blind)
-				blind.layer = 18
-			else
-				blind.layer = 0
 
-				if (disabilities & NEARSIGHT)
-					client.screen += global_hud.vimpaired
-
-				if (eye_blurry)
-					client.screen += global_hud.blurry
-
-				if (druggy)
-					client.screen += global_hud.druggy
-
-				if(eye_stat > 20)
-					if(eye_stat > 30)
-						client.screen += global_hud.darkMask
-					else
-						client.screen += global_hud.vimpaired
-
-		if(machine)
-			if (!( machine.check_eye(src) ))
-				reset_view(null)
-		else
-			if(!client.adminobs)
-				reset_view(null)
-
-/mob/living/carbon/proc/handle_hud_icons()
-	return
-
-/mob/living/carbon/proc/handle_hud_icons_health()
-	if(healths)
-		if (stat != DEAD)
-			switch(health)
-				if(100 to INFINITY)
-					healths.icon_state = "health0"
-				if(80 to 100)
-					healths.icon_state = "health1"
-				if(60 to 80)
-					healths.icon_state = "health2"
-				if(40 to 60)
-					healths.icon_state = "health3"
-				if(20 to 40)
-					healths.icon_state = "health4"
-				if(0 to 20)
-					healths.icon_state = "health5"
-				else
-					healths.icon_state = "health6"
-		else
-			healths.icon_state = "health7"
-
+//this handles hud updates. Calles update_vision() and handle_hud_icons()
 /mob/living/carbon/proc/handle_regular_hud_updates()
 	if(!client)	return 0
 
@@ -613,22 +561,73 @@
 
 	return 1
 
-/mob/living/carbon/proc/handle_stomach()
-	spawn(0)
-		for(var/mob/living/M in stomach_contents)
-			if(M.loc != src)
-				stomach_contents.Remove(M)
-				continue
-			if(istype(M, /mob/living/carbon) && stat != 2)
-				if(M.stat == 2)
-					M.death(1)
-					stomach_contents.Remove(M)
-					qdel(M)
-					continue
-				if(SSmob.times_fired%3==1)
-					if(!(M.status_flags & GODMODE))
-						M.adjustBruteLoss(5)
-					nutrition += 10
+/mob/living/carbon/proc/handle_vision()
 
+	client.screen.Remove(global_hud.blurry, global_hud.druggy, global_hud.vimpaired, global_hud.darkMask)
 
+	if(stat == DEAD)
+		sight |= SEE_TURFS
+		sight |= SEE_MOBS
+		sight |= SEE_OBJS
+		see_in_dark = 8
+		see_invisible = SEE_INVISIBLE_LEVEL_TWO
+	else
+		sight &= ~SEE_TURFS
+		sight &= ~SEE_MOBS
+		sight &= ~SEE_OBJS
+		see_in_dark = 2
+		see_invisible = SEE_INVISIBLE_LIVING
+		if(see_override)
+			see_invisible = see_override
 
+		if(blind)
+			if(eye_blind)
+				blind.layer = 18
+			else
+				blind.layer = 0
+
+				if (disabilities & NEARSIGHT)
+					client.screen += global_hud.vimpaired
+
+				if (eye_blurry)
+					client.screen += global_hud.blurry
+
+				if (druggy)
+					client.screen += global_hud.druggy
+
+				if(eye_stat > 20)
+					if(eye_stat > 30)
+						client.screen += global_hud.darkMask
+					else
+						client.screen += global_hud.vimpaired
+
+		if(machine)
+			if (!( machine.check_eye(src) ))
+				reset_view(null)
+		else
+			if(!client.adminobs)
+				reset_view(null)
+
+/mob/living/carbon/proc/handle_hud_icons()
+	return
+
+/mob/living/carbon/proc/handle_hud_icons_health()
+	if(healths)
+		if (stat != DEAD)
+			switch(health)
+				if(100 to INFINITY)
+					healths.icon_state = "health0"
+				if(80 to 100)
+					healths.icon_state = "health1"
+				if(60 to 80)
+					healths.icon_state = "health2"
+				if(40 to 60)
+					healths.icon_state = "health3"
+				if(20 to 40)
+					healths.icon_state = "health4"
+				if(0 to 20)
+					healths.icon_state = "health5"
+				else
+					healths.icon_state = "health6"
+		else
+			healths.icon_state = "health7"

@@ -28,9 +28,9 @@
 	breath.oxygen += toxins_used
 
 	//BREATH TEMPERATURE
-	handle_temperature(breath)
+	handle_breath_temperature(breath)
 
-/mob/living/carbon/alien/handle_temperature(datum/gas_mixture/breath)
+/mob/living/carbon/alien/handle_breath_temperature(datum/gas_mixture/breath)
 	if(breath.temperature > (T0C+66)) // Hot air hurts :(
 		if(prob(20))
 			src << "<span class='danger'>You feel a searing heat in your lungs!</span>"
