@@ -65,6 +65,7 @@
 
 
 /mob/living/carbon/human/handle_disabilities()
+	..()
 	//Eyes
 	if(!(disabilities & BLIND))
 		if(tinttotal >= TINT_BLIND)		//covering your eyes heals blurry eyes faster

@@ -316,7 +316,7 @@
 
 /mob/living/carbon/proc/handle_disabilities()
 	//Eyes
-	if(disabilities & BLIND || stat)	//disabled-blind, doesn't get better on its own
+	if(disabilities & BLIND || stat)	//blindness from disability or unconsciousness doesn't get better on its own
 		eye_blind = max(eye_blind, 1)
 	else if(eye_blind)			//blindness, heals slowly over time
 		eye_blind = max(eye_blind-1,0)
