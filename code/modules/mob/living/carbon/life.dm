@@ -474,35 +474,33 @@
 		if(see_override)
 			see_invisible = see_override
 
-	if(blind && stat != DEAD)
-		if(eye_blind)
-			blind.layer = 18
-		else
-			blind.layer = 0
+		if(blind)
+			if(eye_blind)
+				blind.layer = 18
+			else
+				blind.layer = 0
 
-			if (disabilities & NEARSIGHT)
-				client.screen += global_hud.vimpaired
-
-			if (eye_blurry)
-				client.screen += global_hud.blurry
-
-			if (druggy)
-				client.screen += global_hud.druggy
-
-			if(eye_stat > 20)
-				if(eye_stat > 30)
-					client.screen += global_hud.darkMask
-				else
+				if (disabilities & NEARSIGHT)
 					client.screen += global_hud.vimpaired
 
-	if (stat != DEAD)
+				if (eye_blurry)
+					client.screen += global_hud.blurry
+
+				if (druggy)
+					client.screen += global_hud.druggy
+
+				if(eye_stat > 20)
+					if(eye_stat > 30)
+						client.screen += global_hud.darkMask
+					else
+						client.screen += global_hud.vimpaired
+
 		if(machine)
 			if (!( machine.check_eye(src) ))
 				reset_view(null)
 		else
 			if(!client.adminobs)
 				reset_view(null)
-
 
 /mob/living/carbon/proc/handle_hud_icons()
 	return
